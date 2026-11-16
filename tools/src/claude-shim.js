@@ -11,8 +11,10 @@
   var CFG=window.DUSTLINE_FIREBASE;
   if(!CFG||!window.firebase){console.warn('Dustline: Firebase config missing, multiplayer and cloud saves are off');return;}
   var app=firebase.initializeApp(CFG);
-  var auth=firebase.auth(),rtdb=firebase.database();
-  var TS=firebase.database.ServerValue.TIMESTAMP;
+  var auth=firebase.auth();
+  // the database goes over plain HTTPS (rest-db.js), not the SDK's WebSocket, which some networks block
+  var rtdb=window.DustlineRestDB(CFG.databaseURL,function(){return auth.currentUser?auth.currentUser.getIdToken():'';});
+  var TS={'.sv':'timestamp'};
   var PEER=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);   // this tab
   var clockSkew=0;rtdb.ref('.info/serverTimeOffset').on('value',function(s){clockSkew=s.val()||0;});
   function now(){return Date.now()+clockSkew;}

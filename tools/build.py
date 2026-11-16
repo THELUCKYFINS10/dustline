@@ -18,7 +18,7 @@ def main(art, out):
     if 'claude-shim.js' in html:
         sys.exit('index.html already has the shim; pass the artifact files, not a built site')
     h = hashlib.sha256(html.encode('utf-8'))
-    for f in ('claude-shim.js', 'config.js'):
+    for f in ('claude-shim.js', 'config.js', 'rest-db.js'):
         h.update(open(os.path.join(SRC, f), 'rb').read())
     build = h.hexdigest()[:12]
     # the build id lets open pages notice a newer site and refresh themselves (see claude-shim.js)
@@ -26,8 +26,8 @@ def main(art, out):
               '<script src="config.js?v=%s"></script>'
               '<script src="vendor/firebase-app-compat.js"></script>'
               '<script src="vendor/firebase-auth-compat.js"></script>'
-              '<script src="vendor/firebase-database-compat.js"></script>'
-              '<script src="claude-shim.js?v=%s"></script>') % (build, build, build)
+              '<script src="rest-db.js?v=%s"></script>'
+              '<script src="claude-shim.js?v=%s"></script>') % (build, build, build, build)
     m = re.search(r'<head[^>]*>', html, re.I)
     if not m:
         sys.exit('no <head> in index.html')
@@ -44,6 +44,7 @@ def main(art, out):
     open(os.path.join(out, 'index.html'), 'w', encoding='utf-8').write(html)
     shutil.copytree(os.path.join(SRC, 'vendor'), os.path.join(out, 'vendor'), dirs_exist_ok=True)
     shutil.copy2(os.path.join(SRC, 'claude-shim.js'), os.path.join(out, 'claude-shim.js'))
+    shutil.copy2(os.path.join(SRC, 'rest-db.js'), os.path.join(out, 'rest-db.js'))
     shutil.copy2(os.path.join(SRC, 'config.js'), os.path.join(out, 'config.js'))
     open(os.path.join(out, '.nojekyll'), 'w').close()
     json.dump({'build': build}, open(os.path.join(out, 'version.json'), 'w'))

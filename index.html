@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="021511e38132";</script><script src="config.js?v=021511e38132"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="vendor/firebase-database-compat.js"></script><script src="claude-shim.js?v=021511e38132"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="034a48c8b5b9";</script><script src="config.js?v=034a48c8b5b9"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=034a48c8b5b9"></script><script src="claude-shim.js?v=034a48c8b5b9"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -10692,8 +10692,9 @@ function renderFriends(){
   list.textContent='';
   if(!roomNs&&!FR.db){const li=document.createElement('li');li.className='frEmpty';li.textContent='Friends need multiplayer, which is not connected on this page.';list.append(li);return;}
   const reqs=Object.values(FR.in).sort((a,b)=>b.t-a.t);
-  if(reqs.length||FR.out.length){
-    const h=document.createElement('li');h.className='frHead';h.textContent='Requests';list.append(h);
+  {
+    const h=document.createElement('li');h.className='frHead';h.textContent='Friend requests'+(reqs.length?' ('+reqs.length+')':'');list.append(h);
+    if(!reqs.length&&!FR.out.length){const li=document.createElement('li');li.className='frEmpty';li.textContent='No requests right now. When someone enters your code, their request shows up here to accept.';list.append(li);}
     reqs.forEach(r=>{
       const li=document.createElement('li');li.className='frRow on frReq';
       const ava=document.createElement('div');ava.className='ava';ava.style.background=AVA[1%AVA.length];ava.textContent=(r.cs||r.code)[0];
