@@ -27,7 +27,8 @@
     setTimeout(function(){if(!done){done=true;res(auth.currentUser||null);}},12000);
   });
   function guestName(uid){return 'Guest-'+String(uid||'').slice(0,4).toUpperCase();}
-  function displayName(u){return u?(u.displayName||guestName(u.uid)):'Guest';}
+  function displayName(u){if(!u)return 'Guest';if(u.displayName)return u.displayName;
+    var g=(u.providerData||[]).filter(function(x){return x&&x.displayName;})[0];return g?g.displayName:guestName(u.uid);}
 
   // ---------- user ----------
   var userNs={
@@ -185,7 +186,15 @@
       var p=new firebase.auth.GoogleAuthProvider(),u=auth.currentUser;
       // a guest who signs in with Google keeps their progress: the guest account is upgraded in place
       var go=u&&u.isAnonymous?u.linkWithPopup(p).catch(function(e){if(e&&e.code==='auth/credential-already-in-use'&&e.credential)return auth.signInWithCredential(e.credential);throw e;}):auth.signInWithPopup(p);
-      return go.then(function(){return true;});
+      return go.then(function(){
+        // linking Google to a guest keeps the guest's blank name: copy the Google name and picture onto the account
+        var cu=auth.currentUser;if(!cu)return true;
+        var g=(cu.providerData||[]).filter(function(x){return x&&x.providerId==='google.com';})[0];
+        var p2=!cu.displayName&&g&&g.displayName?cu.updateProfile({displayName:g.displayName,photoURL:cu.photoURL||g.photoURL||null}).catch(function(){}):Promise.resolve();
+        return p2.then(function(){return cu.reload().catch(function(){});}).then(function(){
+          var c2=auth.currentUser;if(c2)return rtdb.ref('profiles/'+c2.uid).update({name:displayName(c2),t:TS}).catch(function(){});
+        }).then(function(){return true;});
+      });
     },
     signOut:function(){return auth.signOut().then(function(){try{localStorage.removeItem('dustline-auto');}catch(e){}});},
     user:function(){return ready.then(function(u){return u?{id:u.uid,name:displayName(u),anonymous:u.isAnonymous}:null;});}
