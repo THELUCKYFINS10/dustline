@@ -1,0 +1,49 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "profiles": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.child('name').isString() && newData.child('name').val().length <= 40"
+      }
+    },
+    "docs": {
+      "data": {
+        "users": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        }
+      },
+      "friendreq": {
+        "$to": {
+          ".read": "auth != null",
+          "$from": {
+            ".write": "auth != null && (newData.exists() ? newData.child('uid').val() === auth.uid : true)",
+            ".validate": "!newData.exists() || (newData.child('j').isString() && newData.child('j').val().length < 2000)"
+          }
+        }
+      }
+    },
+    "rooms": {
+      "$room": {
+        ".read": "auth != null",
+        "peers": {
+          "$peer": {
+            ".write": "auth != null && (newData.exists() ? newData.child('by').val() === auth.uid && (!data.exists() || data.child('by').val() === auth.uid) : data.child('by').val() === auth.uid)"
+          }
+        },
+        "ev": {
+          ".indexOn": ["t"],
+          "$ev": {
+            ".write": "auth != null && (newData.exists() ? !data.exists() && newData.child('by').val() === auth.uid : data.child('by').val() === auth.uid)",
+            ".validate": "!newData.exists() || (newData.child('d').isString() && newData.child('d').val().length < 8000)"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+window.DUSTLINE_FIREBASE={
+  apiKey:"AIzaSyDIhVcMX9OBQIc9-1-YH1o78opM6x7cSb0",
+  authDomain:"dustline-7f862.firebaseapp.com",
+  databaseURL:"https://dustline-7f862-default-rtdb.firebaseio.com",
+  projectId:"dustline-7f862",
+  storageBucket:"dustline-7f862.firebasestorage.app",
+  messagingSenderId:"372693147850",
+  appId:"1:372693147850:web:39b2369aaea2acc72c9433"
+};
