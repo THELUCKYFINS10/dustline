@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="034a48c8b5b9";</script><script src="config.js?v=034a48c8b5b9"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=034a48c8b5b9"></script><script src="claude-shim.js?v=034a48c8b5b9"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="845c31345c68";</script><script src="config.js?v=845c31345c68"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=845c31345c68"></script><script src="claude-shim.js?v=845c31345c68"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -270,7 +270,7 @@ window.LOADER=(function(){
    localStorage, so it follows them between devices. Guests keep a separate slot in this browser.
    The game itself only starts once a player is chosen: window.__dlBoot runs the main script. */
 window.ACCOUNT=(function(){
-  var KEYS=['dustline-best','dustline-callsign','dustline-stats','dustline-shop','dustline-receipts','dustline-arsenal','dustline-diff','dustline-fc','dustline-friends','dustline-frout'];
+  var KEYS=['dustline-best','dustline-callsign','dustline-stats','dustline-shop','dustline-receipts','dustline-arsenal','dustline-diff','dustline-fc','dustline-friends','dustline-frout','dustline-banner'];
   var SITE=function(){try{return window.claude&&window.claude.site&&window.claude.site.isSite?window.claude.site:null;}catch(e){return null;}};
   var ls={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){}}};
   var $=function(id){return document.getElementById(id);};
@@ -1401,6 +1401,104 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
   .tsLogo .ch{animation:none;opacity:1;transform:none;filter:none}
   .tsKicker,.tsRule,.tsTag,.tsPrompt,.tsBar.top,.tsBar.bot,.tsRule i{animation:none;opacity:1;transform:none}
 }
+/* ===================== Layout polish: nothing overlaps, at any common screen size =====================
+   Header that fits its row, squad banners on the Play tab, map cards whose names fit, holo clock out of the way. */
+#menu .hubTop{gap:14px;min-width:0}
+#menu .hTabs{min-width:0;flex:1 1 auto;justify-content:center;overflow:hidden}
+#menu .hubRight{min-width:0;flex:0 1 auto}
+#menu .operator{min-width:0;max-width:300px}
+#menu .opText{min-width:0;overflow:hidden}
+#menu .callsign{max-width:100%;min-width:0}
+#menu .callsign b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#menu #acctLine{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#menu .gear{flex-shrink:0}
+@media (max-width:1500px){#menu .hTab{font-size:19px;padding:7px 9px}#menu .operator{max-width:240px}#menu .callsign b{font-size:20px}}
+@media (max-width:1320px){#menu .hTab{font-size:17px;padding:7px 7px;letter-spacing:.04em}#menu .logo{font-size:28px}#menu .hTabs kbd.key{display:none}#menu #rankNext{display:none}#menu .operator{max-width:205px}}
+/* Play tab: choices | hero | squad, maps along the bottom */
+.hPanel[data-homepanel="deploy"]{grid-template-columns:250px minmax(0,1fr) auto!important;column-gap:clamp(18px,2.6vw,44px)!important}
+.hPanel[data-homepanel="deploy"] .ops{grid-column:1/-1}
+.hero{min-width:0}
+.hero #heroName,#heroName{font-size:clamp(40px,min(5.2vw,10vh),118px)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:.04em 0}
+.hero #heroLine{max-width:min(46ch,100%)}
+.diff .segBtn,.hPanel[data-homepanel="deploy"] .segBtn{font-size:15px!important;letter-spacing:.03em;padding:7px 2px!important;overflow:hidden;text-overflow:ellipsis}
+.roomRow .squad{display:none}
+.mapCard b{font-size:clamp(15px,1.45vw,26px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 20px)}
+.mapCard span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 20px)}
+.mapCard em{max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* holo clock and readouts: top right on the Play tab, hidden where panels need the room */
+#menu[data-tab="deploy"] #holo .clock{top:calc(var(--hubTopH,74px) + 26px);bottom:auto;right:28px}
+#menu[data-tab="deploy"] #holo .sys{top:calc(var(--hubTopH,74px) + 44px);bottom:auto;right:160px}
+#menu:not([data-tab="deploy"]):not([data-tab="locker"]) #holo .clock,#menu:not([data-tab="deploy"]):not([data-tab="locker"]) #holo .sys{display:none}
+@media (max-height:760px){#menu[data-tab="deploy"] #holo .sys{display:none}}
+/* squad line-up */
+.sqLine{grid-column:3;grid-row:1;align-self:end;display:flex;flex-direction:column;gap:8px;min-width:0;padding-bottom:4px}
+.sqTop{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:20px}
+#sqHead{font-family:var(--mono,'Space Mono',monospace);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#03121f;background:var(--holo,#38c8ff);padding:3px 8px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sqLeave{font-size:11px;padding:3px 8px;white-space:nowrap;background:rgba(3,13,24,.8);color:var(--ink,#e2f6ff);border:1px solid rgba(56,200,255,.4)}
+.sqCards{display:flex;gap:clamp(6px,.7vw,12px);align-items:flex-end}
+.bnCard{--w:clamp(86px,min(8.4vw,15vh),150px);position:relative;width:var(--w);height:calc(var(--w)*1.62);flex:0 0 auto;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding:0 6px calc(var(--w)*.14);
+  background:var(--bnPat),linear-gradient(170deg,var(--bnA),var(--bnB));border:1px solid rgba(255,255,255,.16);color:var(--bnInk);font:inherit;text-align:center;overflow:hidden;
+  clip-path:polygon(0 0,100% 0,100% 90%,50% 100%,0 90%);box-shadow:inset 0 3px 0 var(--bnAcc)}
+.bnCard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.08),transparent 30%,transparent 60%,rgba(0,0,0,.45));pointer-events:none}
+.bnCard .bnEm{position:absolute;top:12%;left:50%;width:46%;transform:translateX(-50%);fill:var(--bnAcc);filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+.bnCard .bnName{position:relative;z-index:1;max-width:100%;font-family:var(--display);font-weight:700;font-size:calc(var(--w)*.108);line-height:1.05;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.bnCard .bnTitle{position:relative;z-index:1;max-width:100%;font-size:calc(var(--w)*.085);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bnAcc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bnCard .bnRank{position:relative;z-index:1;font-family:var(--mono,monospace);font-size:calc(var(--w)*.07);letter-spacing:.12em;text-transform:uppercase;opacity:.75;white-space:nowrap;overflow:hidden;max-width:100%;text-overflow:ellipsis}
+.bnCard .bnStatus{position:absolute;z-index:1;top:5px;left:5px;font-family:var(--mono,monospace);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;background:rgba(0,0,0,.55);color:#cfe;white-space:nowrap;max-width:calc(100% - 10px);overflow:hidden;text-overflow:ellipsis}
+.bnCard .bnStatus.live{background:#d2462a;color:#fff}
+.bnCard .bnTag{position:absolute;z-index:1;top:5px;right:5px;font-style:normal;font-family:var(--mono,monospace);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 5px;background:var(--bnAcc);color:#06121c;opacity:0;transition:opacity .15s}
+button.bnCard{cursor:pointer}
+button.bnCard:hover .bnTag,button.bnCard:focus-visible .bnTag{opacity:1}
+button.bnCard:hover,button.bnCard:focus-visible{border-color:var(--bnAcc);outline:none;filter:brightness(1.12)}
+.bnCard.me{box-shadow:inset 0 3px 0 var(--bnAcc),0 0 0 1px var(--bnAcc)}
+.bnCard.empty{background:rgba(4,14,24,.55);border:1px dashed rgba(56,200,255,.38);color:var(--dim,#86a9bd);justify-content:center;gap:6px;padding:0 8px;box-shadow:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.bnCard.empty::after{content:none}
+.bnCard.empty i{font-style:normal;font-size:calc(var(--w)*.3);line-height:1;color:var(--holo,#38c8ff)}
+.bnCard.empty span{font-size:calc(var(--w)*.08);font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.2}
+.bnCard.empty:hover{border-color:var(--holo,#38c8ff);color:var(--ink,#e2f6ff)}
+@media (max-width:1000px){.sqLine{grid-column:1;grid-row:auto}}
+/* banner editor */
+.bnEditCard{max-width:720px;width:min(720px,calc(100vw - 32px));box-sizing:border-box}
+.bnEditBody{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:start}
+.bnPreview .bnCard{--w:clamp(130px,16vw,180px)}
+.bnSide{display:flex;flex-direction:column;gap:12px;min-width:0}
+.bnTabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.bnTabs button{flex:1;background:none;border:0;border-bottom:2px solid transparent;color:var(--dim);font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.05em;text-transform:uppercase;padding:6px 4px;cursor:pointer}
+.bnTabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--holo,#38c8ff)}
+.bnOpts{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:min(46vh,330px);overflow-y:auto;padding:2px}
+.bnOpts.bt-t{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.bnOpt{display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 6px;background:rgba(4,18,32,.72);border:1px solid rgba(56,200,255,.22);color:var(--ink);font:inherit;cursor:pointer;text-align:center}
+.bnOpt i{display:block;width:100%;height:38px;border:1px solid rgba(255,255,255,.12)}
+.bnOpt svg{width:36px;height:36px;fill:var(--holo,#38c8ff)}
+.bnOpt span{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.bnOpt small{font-size:10px;color:var(--dim)}
+.bnOpts.bt-t .bnOpt{align-items:flex-start;text-align:left}
+.bnOpt.on{border-color:var(--holo,#38c8ff);box-shadow:0 0 0 1px var(--holo,#38c8ff),0 0 14px rgba(56,200,255,.25)}
+.bnOpt:hover:not(:disabled){border-color:rgba(56,200,255,.6)}
+.bnOpt.locked{opacity:.5;cursor:not-allowed}
+.bnHint{margin:0}
+@media (max-width:620px){.bnEditBody{grid-template-columns:1fr}.bnPreview{justify-self:center}}
+/* friends panel: room for the code box and a button sized like the rest */
+.frCard{max-width:520px!important;width:min(520px,calc(100vw - 32px));box-sizing:border-box}
+.frAddRow input{min-width:150px}
+.frAddRow .frBtn,#frAddBtn{font-size:17px!important;padding:8px 16px!important;white-space:nowrap;flex:0 0 auto}
+.frMe .frBtn{flex:0 0 auto}
+/* loadout: slot names and class filters fit their boxes */
+.loSlots{gap:6px}
+/* mode names never break; the line beside the chosen mode takes what is left */
+.modeBtn b{white-space:nowrap;flex:0 0 auto}
+.modeBtn span{min-width:0}
+.diff .segBtn,.hPanel[data-homepanel="deploy"] .segBtn{font-size:14px!important;letter-spacing:.01em!important;padding:7px 0!important;text-overflow:clip}
+.loSlots .loSlot b,.loSlot b{white-space:normal;line-height:1.02;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:2.04em}
+@media (max-width:1500px){
+  .loSlots .loSlot b,.loSlot b{font-size:15px}
+  .loTab{font-size:17px;padding:6px 7px 8px;letter-spacing:.03em}
+}
+.loFilter{flex-wrap:nowrap}
+.lkNav button{white-space:nowrap}
+@media (max-width:1700px){.lkNav button{font-size:21px}#menu .hTabs kbd.key{display:none}}
+#menu .hPanel .panelHead p{max-width:min(60ch,calc(100vw - 420px))}
+.hPanel .stats b{font-size:clamp(26px,2.7vw,40px)!important}
 </style>
 
 <canvas id="game"></canvas>
@@ -1464,6 +1562,19 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
     <p class="meta frHint">Invite a friend who is online and they get a pop-up to join your squad. Inviting from Solo starts a private co-op squad.</p>
   </div>
 </div>
+<div id="bnEdit" class="coWrap bnWrap" role="dialog" aria-modal="true" aria-labelledby="bnEditTitle" hidden>
+  <div class="coCard bnEditCard">
+    <div class="coTop"><h3 id="bnEditTitle">Your banner</h3><button type="button" class="coX" id="bnClose" aria-label="Close">✕</button></div>
+    <div class="bnEditBody">
+      <div class="bnPreview" id="bnPreview"></div>
+      <div class="bnSide">
+        <div class="bnTabs" role="tablist" aria-label="Banner parts"><button type="button" role="tab" data-bt="c">Colour</button><button type="button" role="tab" data-bt="p">Pattern</button><button type="button" role="tab" data-bt="e">Emblem</button><button type="button" role="tab" data-bt="t">Title</button></div>
+        <div class="bnOpts" id="bnOpts"></div>
+        <p class="meta bnHint">Your squad and friends see this banner. Play to unlock more colours, emblems and titles.</p>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="crateToast" class="crateToast" role="status" hidden><span class="ctKick">Crate earned</span><b id="ctName">Supply Crate</b><span id="ctWhy"></span></div>
 <div id="invite" class="invite" role="alertdialog" aria-labelledby="invWho" hidden>
   <div><b id="invWho">Friend</b> <span id="invWhat">invited you to their squad</span></div>
@@ -1487,7 +1598,7 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
   <div class="tsFlash"></div>
 </div>
 
-<div id="menu" class="screen">
+<div id="menu" class="screen" data-tab="deploy">
   <div id="mapFade" aria-hidden="true"></div>
   <div id="holo" aria-hidden="true">
     <div class="ticks" id="hoTicks"></div>
@@ -1542,7 +1653,7 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
           </div>
           <button type="button" class="friendsBtn" id="friendsBtn"><span>Friends &amp; invites</span><em id="friendsOn"></em></button>
           <div class="roomRow" id="roomRow" hidden>
-            <label for="roomCode">Room code</label><input id="roomCode" maxlength="16" value="squad" autocomplete="off" spellcheck="false">
+            <label for="roomCode">Squad code</label><input id="roomCode" maxlength="16" value="" placeholder="Type a squad code" autocomplete="off" spellcheck="false">
             <ul class="squad" id="squadList" aria-label="Players in this room"></ul>
             <span class="meta" id="roomStatus" role="status"></span>
           </div>
@@ -1567,6 +1678,11 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
           <div class="note" id="touchNote" hidden>Dustline needs a keyboard and mouse. Open it on a computer to play.</div>
           <div class="note" id="glNote" hidden>Your browser could not start WebGL, so the game can't run here.</div>
           <div id="mapKicker" hidden></div><div id="brief" hidden></div>
+        </div>
+
+        <div class="sqLine" id="sqLine" aria-label="Your squad">
+          <div class="sqTop"><span id="sqHead">Squad</span><button type="button" class="linkBtn" id="sqLeave" hidden>Leave squad</button></div>
+          <div class="sqCards" id="sqCards"></div>
         </div>
 
         <div class="ops">
@@ -1603,7 +1719,7 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
       </section>
 
       <section class="hPanel" data-homepanel="records" role="tabpanel" hidden>
-        <div class="panelHead"><h3>Service record</h3><p>Kept on this device.</p></div>
+        <div class="panelHead"><h3>Service record</h3><p>Saved with your account.</p></div>
         <div class="stats" id="recStats"></div>
         <div class="recMaps" id="recMaps"></div>
         <button type="button" class="linkBtn" id="recReset">Reset records</button>
@@ -1634,7 +1750,7 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
               <li>A stim restores 250 health. You carry three and earn one back for each wave cleared.</li>
               <li>The radar only shows raiders while they are firing, so watch for the red dots.</li>
               <li>With the sniper scoped in, hold sprint to steady your aim.</li>
-              <li>For co-op or versus, everyone picks the mode and types the same room code. The first player to deploy picks the map; everyone else presses Deploy to join them.</li>
+              <li>For co-op or versus, invite friends to your squad, or everyone picks the mode and types the same squad code. The first player to deploy picks the map; everyone else presses Deploy to join them.</li>
             </ul>
           </div>
           <div>
@@ -9472,7 +9588,7 @@ function newMp(mode){
     fxOnly:false,deathPos:null,deadT:0,lastN:0,
     dealt:{},pv:{},hu:{},ku:{},seenH:new Map(),seenC:new Map(),seenV:new Map(),seenD:new Map()};
 }
-function roomCode(){return ($('roomCode').value||'').toLowerCase().replace(/[^a-z0-9_.-]/g,'').slice(0,16)||'squad';}
+function roomCode(){return ($('roomCode').value||'').toLowerCase().replace(/[^a-z0-9_.-]/g,'').slice(0,16);}
 function roomName(){return 'dl-'+roomCode();}
 /* Where a squad meets: a named room for the code when the host offers named rooms, otherwise the page's shared
    room with everyone tagging their presence with the code (rc) so squads with different codes ignore each other. */
@@ -9482,6 +9598,11 @@ let namedRoomsOff=false;
 async function mpJoin(){
   if(!mp||!roomNs)return;
   const m=mp,name=roomName(),code=roomCode();
+  // no code yet: stay out of every room until the player types one (or deploys, which makes a private one)
+  if(!code){
+    if(m.room){mpUnlisten(m);const old=m.room;m.room=null;if(m.shared)old.presence({rc:null,ig:0}).catch(()=>{});else old.leave().catch(()=>{});}
+    m.roomName='';m.code='';m.joining=false;m.joinErr='';updateRoomStatus();return;
+  }
   if(m.room&&m.roomName===name)return;
   if(m.joining&&m.roomName===name)return;
   if(m.room){
@@ -9510,7 +9631,7 @@ async function mpJoin(){
 function lobbyPresence(){
   try{friendPresence();}catch(e){}
   if(!mp||!mp.room||mp.inGame)return;
-  mp.room.presence({rc:mp.code,ig:0,md:mp.mode,mi:currentMap,cs:callsign,sk:SHOP.equipped}).then(()=>{if(mp&&mp.joinErr&&mp.shared){mp.joinErr='';updateRoomStatus();}},e=>{if(mp){mp.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}});
+  mp.room.presence({rc:mp.code,ig:0,md:mp.mode,mi:currentMap,cs:callsign,sk:SHOP.equipped,bn:bnClean(myBanner),rk:rankFor(stats.kills).r.name}).then(()=>{if(mp&&mp.joinErr&&mp.shared){mp.joinErr='';updateRoomStatus();}},e=>{if(mp){mp.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}});
 }
 function mpLeave(){
   if(!mp)return;
@@ -9544,7 +9665,11 @@ function updateRoomStatus(){
   const el=$('roomStatus'),btn=$('deployBtn');if(!el)return;
   if(!mp){el.textContent='';el.classList.remove('live');btn.textContent='Deploy';try{renderSquad();}catch(e){}return;}
   if(mp.inGame)return;
-  if(!mp.room){el.textContent=roomState==='pending'?'Connecting to multiplayer…':'Joining room '+roomCode()+'…';el.classList.remove('live');return;}
+  if(!mp.room&&!roomCode()&&roomState!=='pending'){
+    el.textContent='Type a squad code your friends will type too, or invite friends to your squad. Deploying without a code starts a private squad.';
+    el.classList.remove('live');btn.textContent=modeSel==='coop'?'Deploy squad':'Enter arena';try{renderSquad();}catch(e){}return;
+  }
+  if(!mp.room){el.textContent=roomState==='pending'?'Connecting to multiplayer…':'Joining squad '+roomCode()+'…';el.classList.remove('live');return;}
   if(mp.joinErr&&(!mp.shared||!['upstream_error','not_permitted','limit_reached'].includes(mp.joinErr))){
     el.textContent='Multiplayer is not connecting: '+(JOIN_HELP[mp.joinErr]||mp.joinErr)+'. You can still play solo.';el.classList.remove('live');return;
   }
@@ -9553,13 +9678,18 @@ function updateRoomStatus(){
     el.textContent=m.n+(m.n===1?' player is':' players are')+' in a '+(m.md==='coop'?'co-op':'versus')+' match on '+MAPS[m.mi].name+'. Deploy to join them.';
     btn.textContent='Join match';
   }else{
-    el.textContent=o.length?'Everyone is in the lobby. Whoever deploys first picks the map.':'Nobody else here yet. Send your squad this room code. Whoever deploys first picks the map.';
+    el.textContent=o.length?'Everyone is in the lobby. Whoever deploys first picks the map.':'Nobody else here yet. Send your squad this code. Whoever deploys first picks the map.';
     btn.textContent=modeSel==='coop'?'Deploy squad':'Enter arena';
   }
   el.classList.toggle('live',o.length>0);
   try{renderSquad();}catch(e){}
 }
 function startDeploy(){
+  // co-op or versus with no code: make a private squad code and deploy once it is joined
+  if(mp&&!mp.inGame&&!roomCode()){
+    $('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');
+    mpJoin().then(()=>{if(mp&&mp.room)startDeploy();});return;
+  }
   const go=()=>{resetGame();if(mp)mpOnDeploy();play();};
   const m=mp&&!mp.inGame?activeMatch():null;
   if(m){
@@ -10244,16 +10374,44 @@ function setInspect(on){
   else if(!inspect.m&&LO.sel)inspectShow(DEF[LO.sel]);
   if(inspect.m)inspect.m.g.visible=on;
 }
+// the open part of the screen beside the Locker or Loadout panels, in pixels (measured a few times a second)
+let inspBox=null,inspBoxT=0;
+function inspectBox(){
+  const now=performance.now();if(inspBox&&now-inspBoxT<250)return inspBox;inspBoxT=now;
+  const W=innerWidth,H=innerHeight,q=sel=>document.querySelector(sel);
+  const top=q('#menu .hubTop'),tb=top?top.getBoundingClientRect().bottom:80;
+  let x0=0,x1=W-28,y0=tb+14,y1=H-24;
+  if(inspect.where==='locker'){
+    const lm=$('lkMain');if(!lm)return inspBox=null;const r=lm.getBoundingClientRect();x0=r.right+28;
+    const ph=q('.hPanel[data-homepanel="locker"] .panelHead');if(ph){const pr=ph.getBoundingClientRect();if(pr.right>x0)y0=Math.max(y0,pr.bottom+10);}
+    const ck=q('#holo .clock');if(ck&&getComputedStyle(ck).display!=='none'){const c=ck.getBoundingClientRect();if(c.width)y1=Math.min(y1,c.top-10);}
+  }else{
+    const l=q('.loLeft'),d=$('loDetail');if(!l||!d)return inspBox=null;
+    const lr=l.getBoundingClientRect(),dr=d.getBoundingClientRect();x0=Math.max(lr.right,dr.left)+20;y1=dr.top-12;
+    const ph=q('.hPanel[data-homepanel="loadout"] .panelHead');if(ph){const pr=ph.getBoundingClientRect();if(pr.right>x0)y0=Math.max(y0,pr.bottom+8);}
+  }
+  return inspBox={x0,x1,y0,y1};
+}
 function updateInspect(dt){
   const m=inspect.m;if(!m)return;
   inspect.spin+=dt*.5;
-  // place it over the upper part of the right-hand column (screen fractions sx, sy), at a fixed depth
-  const W=innerWidth,wide=W>1000,z=2.4,hh=Math.tan(gunCam.fov*Math.PI/360)*z,hw=hh*gunCam.aspect;
-  const lk=inspect.where==='locker',sx=lk?(wide?.74:.5):(wide?.76:.5),sy=lk?(wide?.48:.62):(wide?.26:.2);
+  // place it in the middle of the screen space the menu leaves open, sized to fit there, at a fixed depth
+  const W=innerWidth,H=innerHeight,wide=W>1000,z=2.4,hh=Math.tan(gunCam.fov*Math.PI/360)*z,hw=hh*gunCam.aspect;
+  const lk=inspect.where==='locker';
+  let sx=lk?(wide?.74:.5):(wide?.76:.5),sy=lk?(wide?.48:.62):(wide?.26:.2),fitW=1e9,fitH=1e9;
+  const box=wide?inspectBox():null;
+  if(box&&box.x1-box.x0>120&&box.y1-box.y0>70){
+    sx=(box.x0+box.x1)/2/W;sy=(box.y0+box.y1)/2/H;
+    fitW=(box.x1-box.x0)/W*2*hw;fitH=(box.y1-box.y0)/H*2*hh;
+  }
   m.g.position.set((sx*2-1)*hw,(1-sy*2)*hh,-z);
   m.g.rotation.set(.1+Math.sin(inspect.spin*.7)*.05,Math.PI/2+Math.sin(inspect.spin)*.4,m.melee?-.95:0,'YXZ');
   const L=Math.max(.3,-m.muzzle.z+.35);
-  m.g.scale.setScalar((m.melee?1.6:Math.min(1.5,1.25/L))*(wide?1:.8)*(lk&&wide?1.25:1));
+  let sc=(m.melee?1.6:Math.min(1.5,1.25/L))*(wide?1:.8)*(lk&&wide?1.25:1);
+  // the swing of the turntable makes it look up to ~8% longer; melee weapons stand diagonally
+  const span=m.melee?L*.8:L*1.08,tall=m.melee?L*.75:L*.42;
+  sc=Math.min(sc,fitW*.9/span,fitH*.9/tall);
+  m.g.scale.setScalar(sc);
   m.g.visible=true;
 }
 function renderRecords(){
@@ -10279,6 +10437,7 @@ function homeTab(n){
   if(n==='loadout')renderLoadout();
   setShowroom(n==='shop'||(n==='locker'&&(LK.view==='operators'||LK.view==='emotes')));inspect.where='loadout';setInspect(n==='loadout');
   if(n==='locker')renderLocker();
+  $('menu').dataset.tab=n;inspBox=null;
   uiTick(n==='deploy'?660:740);
 }
 function goHome(){
@@ -10439,7 +10598,7 @@ Object.keys(MAPS).forEach(id=>{const c=$('map-'+id);if(c&&THUMBS[id])c.querySele
 function renderHero(){
   if(!HERO)return;
   const h=HERO[currentMap]||{};
-  $('heroName').textContent=MAPS[currentMap].name;$('heroLine').textContent=h.line||'';$('heroBadge').textContent=h.badge||'';
+  $('heroName').textContent=MAPS[currentMap].name;fitHeroName();$('heroLine').textContent=h.line||'';$('heroBadge').textContent=h.badge||'';
 }
 function renderActive(){
   const el=$('activeLine');if(!el)return;
@@ -10449,6 +10608,7 @@ function renderActive(){
 }
 const AVA=['#ff5a1f','#6fd8ff','#ff8a5a','#d58cff','#ffd34d','#7dffb0'];
 function renderSquad(){
+  try{renderSquadLine();}catch(e){}
   const ul=$('squadList');if(!ul)return;
   ul.innerHTML='';
   const row=(name,status,me,i,idle)=>{
@@ -10652,7 +10812,7 @@ function liveRequests(){
 try{if(window.claude&&typeof window.claude.use==='function')window.claude.use('db').then(d=>{if(!d)return;FR.db=d;pollRequests();FR.pollT=setInterval(pollRequests,20000);},()=>{});}catch(e){}
 function inviteFriend(code){
   // inviting from solo starts a private squad with a fresh code
-  if(!mp||modeSel==='solo'){$('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');setMode('coop');}
+  if(!mp||modeSel==='solo'||!roomCode()){$('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');if(!mp||modeSel==='solo')setMode('coop');else mpJoin();}
   if(!FR.inv.includes(code))FR.inv.push(code);FR.invT=Date.now();
   friendPresence();toast('Invite sent');uiTick(980);renderFriends();
 }
@@ -10750,6 +10910,145 @@ $('invNo').addEventListener('click',()=>answerInvite(false));
 if(roomNs)friendsInit();
 renderFriendsBtn();
 $('acctSwitch').addEventListener('click',()=>{$('acctSwitch').disabled=true;$('acctSwitch').textContent='Switching…';if(window.ACCOUNT)ACCOUNT.switchAccount();else location.reload();});
+/* ---------- Player banners and the squad line-up ----------
+   Every player has a banner (colours, pattern, emblem and a title earned in play) that they set up on the home
+   screen. Squadmates' banners stand side by side on the Play tab, the way party members line up in hero shooters;
+   empty places invite a friend. Banners travel in presence (bn) so everyone sees each other's. */
+const BN_COLORS=[
+  {id:'steel',name:'Steel',a:'#20374a',b:'#0a1520',ink:'#d7efff',acc:'#38c8ff'},
+  {id:'signal',name:'Signal',a:'#7a2a0c',b:'#1d0a04',ink:'#ffe6d6',acc:'#ff5a1f'},
+  {id:'teal',name:'Riso Teal',a:'#0f5550',b:'#04171a',ink:'#dafff9',acc:'#19c2b1'},
+  {id:'olive',name:'Olive',a:'#46521c',b:'#141808',ink:'#f1f5d8',acc:'#b9d34a'},
+  {id:'crimson',name:'Crimson',a:'#6e1020',b:'#1c0408',ink:'#ffe0e4',acc:'#ff4d6a'},
+  {id:'violet',name:'Violet',a:'#45206e',b:'#12071d',ink:'#efe2ff',acc:'#b47cff'},
+  {id:'sand',name:'Sand',a:'#8a7350',b:'#2a2216',ink:'#fff6e4',acc:'#ffd27a'},
+  {id:'arctic',name:'Arctic',a:'#9fb8c8',b:'#3a4c5a',ink:'#0b1824',acc:'#ffffff'},
+  {id:'gold',name:'Gold',a:'#8c6a12',b:'#2b1f04',ink:'#fff3c4',acc:'#ffd23f',need:k=>k>=500,how:'500 kills'},
+  {id:'void',name:'Void',a:'#16161c',b:'#000000',ink:'#e9e9f2',acc:'#9aa0ff',need:k=>k>=1500,how:'1,500 kills'}];
+const BN_PATTERNS=[
+  {id:'none',name:'Clean',css:'none'},
+  {id:'stripe',name:'Hazard',css:'repeating-linear-gradient(135deg,rgba(255,255,255,.09) 0 10px,transparent 10px 22px)'},
+  {id:'chev',name:'Chevrons',css:'repeating-linear-gradient(45deg,transparent 0 12px,rgba(255,255,255,.07) 12px 16px),repeating-linear-gradient(-45deg,transparent 0 12px,rgba(255,255,255,.07) 12px 16px)'},
+  {id:'grid',name:'Grid',css:'linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px) 0 0/14px 14px,linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px) 0 0/14px 14px'},
+  {id:'dots',name:'Halftone',css:'radial-gradient(rgba(255,255,255,.16) 1.2px,transparent 1.6px) 0 0/7px 7px'},
+  {id:'rays',name:'Sunburst',css:'repeating-conic-gradient(from 0deg at 50% 30%,rgba(255,255,255,.09) 0 8deg,transparent 8deg 20deg)'},
+  {id:'camo',name:'Camo',css:'radial-gradient(ellipse 30% 18% at 20% 30%,rgba(0,0,0,.28) 60%,transparent 62%),radial-gradient(ellipse 26% 16% at 75% 55%,rgba(0,0,0,.25) 60%,transparent 62%),radial-gradient(ellipse 34% 14% at 40% 80%,rgba(255,255,255,.08) 60%,transparent 62%),radial-gradient(ellipse 20% 12% at 80% 15%,rgba(255,255,255,.07) 60%,transparent 62%)'}];
+const BN_EMBLEMS=[
+  {id:'chev',name:'Chevron',d:'M10 34 L32 18 L54 34 L54 44 L32 28 L10 44Z M10 50 L32 34 L54 50 L54 58 L32 42 L10 58Z'},
+  {id:'star',name:'Star',d:'M32 6 L39 24 L58 24 L43 36 L49 56 L32 44 L15 56 L21 36 L6 24 L25 24Z'},
+  {id:'cross',name:'Crosshair',d:'M30 4h4v14h-4z M30 46h4v14h-4z M4 30h14v4H4z M46 30h14v4H46z M32 14a18 18 0 1 0 .01 0z M32 19a13 13 0 1 1-.01 0z M30 30h4v4h-4z'},
+  {id:'flame',name:'Flame',d:'M32 4 C40 18 50 24 48 40 C47 52 38 60 32 60 C24 60 15 53 16 41 C17 31 24 28 26 18 C30 26 34 28 35 34 C38 28 37 16 32 4Z'},
+  {id:'bolt',name:'Bolt',d:'M38 4 L14 36 L29 36 L24 60 L50 26 L35 26 L42 4Z'},
+  {id:'shield',name:'Shield',d:'M32 4 L56 12 L56 32 C56 46 45 56 32 60 C19 56 8 46 8 32 L8 12Z M32 12 L16 17 L16 32 C16 41 23 48 32 51Z'},
+  {id:'skull',name:'Skull',d:'M32 6 C17 6 9 16 9 29 C9 37 13 42 18 45 L18 55 L26 55 L26 50 L30 50 L30 55 L34 55 L34 50 L38 50 L38 55 L46 55 L46 45 C51 42 55 37 55 29 C55 16 47 6 32 6Z M22 26 a6 6 0 1 0 .01 0z M42 26 a6 6 0 1 0 .01 0z',need:k=>k>=250,how:'250 kills'},
+  {id:'crown',name:'Crown',d:'M6 20 L19 32 L32 12 L45 32 L58 20 L52 52 L12 52Z',need:(k,s,b)=>b>=20,how:'reach wave 20'}];
+const BN_TITLES=[
+  {id:'boots',name:'Fresh Boots'},
+  {id:'rifle',name:'Rifleman',need:k=>k>=50,how:'50 kills'},
+  {id:'veteran',name:'Veteran',need:(k,s)=>s.matches>=25,how:'play 25 matches'},
+  {id:'sharp',name:'Sharpshooter',need:(k,s)=>s.headshots>=100,how:'100 headshots'},
+  {id:'breaker',name:'Wave Breaker',need:(k,s,b)=>b>=10,how:'reach wave 10'},
+  {id:'globe',name:'Globetrotter',need:(k,s)=>Object.keys(s.maps||{}).length>=4,how:'play 4 different maps'},
+  {id:'wall',name:'Iron Wall',need:(k,s,b)=>b>=20,how:'reach wave 20'},
+  {id:'cent',name:'Centurion',need:k=>k>=1000,how:'1,000 kills'},
+  {id:'ghost',name:'Ghost of the Dust',need:(k,s)=>s.headshots>=1000,how:'1,000 headshots'}];
+const bnFind=(list,id)=>list.find(x=>x.id===id)||list[0];
+function bnBestWave(){let b=0;try{for(const k in stats.maps){const w=+(stats.maps[k]&&stats.maps[k].wave)||0;if(w>b)b=w;}}catch(e){}return b;}
+function bnOpen(item){return !item.need||item.need(stats.kills||0,stats,bnBestWave());}
+let myBanner={c:'steel',p:'stripe',e:'chev',t:'boots'};
+try{const v=JSON.parse(localStorage.getItem('dustline-banner')||'null');if(v&&typeof v==='object')myBanner=Object.assign(myBanner,v);}catch(e){}
+function bnClean(b){
+  b=b&&typeof b==='object'?b:{};
+  const pick=(list,id)=>(list.find(x=>x.id===id)||list[0]).id;
+  return {c:pick(BN_COLORS,b.c),p:pick(BN_PATTERNS,b.p),e:pick(BN_EMBLEMS,b.e),t:pick(BN_TITLES,b.t)};
+}
+function saveBanner(){myBanner=bnClean(myBanner);try{localStorage.setItem('dustline-banner',JSON.stringify(myBanner));}catch(e){}cloudSoon();try{lobbyPresence();}catch(e){}squadSig='';try{renderSquad();}catch(e){}}
+const SVGNS='http://www.w3.org/2000/svg';
+// one banner card; o = {name, rank, status, me, big}
+function bannerEl(b,o){
+  b=bnClean(b);const C=bnFind(BN_COLORS,b.c),P=bnFind(BN_PATTERNS,b.p),E=bnFind(BN_EMBLEMS,b.e),T=bnFind(BN_TITLES,b.t);
+  const el=document.createElement(o.button?'button':'div');if(o.button)el.type='button';
+  el.className='bnCard'+(o.me?' me':'')+(o.big?' big':'');
+  el.style.setProperty('--bnA',C.a);el.style.setProperty('--bnB',C.b);el.style.setProperty('--bnInk',C.ink);el.style.setProperty('--bnAcc',C.acc);el.style.setProperty('--bnPat',P.css);
+  const em=document.createElementNS(SVGNS,'svg');em.setAttribute('viewBox','0 0 64 64');em.setAttribute('class','bnEm');em.setAttribute('aria-hidden','true');
+  const pa=document.createElementNS(SVGNS,'path');pa.setAttribute('d',E.d);pa.setAttribute('fill-rule','evenodd');em.append(pa);
+  const nm=document.createElement('b');nm.className='bnName';nm.textContent=o.name||'OPERATOR';
+  const ti=document.createElement('span');ti.className='bnTitle';ti.textContent=T.name;
+  const rk=document.createElement('span');rk.className='bnRank';rk.textContent=o.rank||'';
+  el.append(em,nm,ti,rk);
+  if(o.status){const st=document.createElement('span');st.className='bnStatus'+(o.live?' live':'');st.textContent=o.status;el.append(st);}
+  if(o.tag){const tg=document.createElement('em');tg.className='bnTag';tg.textContent=o.tag;el.append(tg);}
+  return el;
+}
+const cleanName=v=>(typeof v==='string'&&v?v.replace(/[^A-Za-z0-9 _.-]/g,'').slice(0,14).toUpperCase():'')||'OPERATOR';
+let squadSig='';
+function renderSquadLine(){
+  const box=$('sqCards');if(!box)return;
+  const mates=[];
+  if(mp&&mp.room&&roomCode()){
+    for(const p of others()){if(mates.length>=7)break;const pr=p.presence||{};
+      mates.push({name:cleanName(pr.cs),bn:pr.bn,rank:typeof pr.rk==='string'?pr.rk.slice(0,18):'',status:pr.ig===1?('In match'+(MAPS[pr.mi]?' · '+MAPS[pr.mi].name:'')):'Ready',live:pr.ig===1});}
+  }
+  const inSquad=!!(mp&&roomCode());
+  const R=rankFor(stats.kills).r.name;
+  const sig=JSON.stringify([myBanner,callsign,R,inSquad,roomCode(),modeSel,mates]);
+  if(sig===squadSig)return;squadSig=sig;
+  box.textContent='';
+  const meCard=bannerEl(myBanner,{name:callsign,rank:R,me:true,button:true,status:inSquad?'You':'',tag:'Edit'});
+  meCard.setAttribute('aria-label','Your banner: '+callsign+'. Customize it');
+  meCard.addEventListener('click',openBannerEdit);
+  box.append(meCard);
+  mates.slice(0,3).forEach(m=>box.append(bannerEl(m.bn,{name:m.name,rank:m.rank,status:m.status,live:m.live})));
+  for(let i=1+Math.min(3,mates.length);i<4;i++){
+    const e=document.createElement('button');e.type='button';e.className='bnCard empty';
+    e.innerHTML='<i aria-hidden="true">+</i><span>Invite a friend</span>';
+    e.addEventListener('click',()=>openFriends());box.append(e);
+  }
+  const more=mates.length-3;
+  $('sqHead').textContent=inSquad?('Squad · '+roomCode()+(more>0?' · +'+more+' more':'')):'Squad';
+  $('sqLeave').hidden=!inSquad;
+}
+function leaveSquad(){$('roomCode').value='';setMode('solo');squadSig='';renderSquadLine();toast('You left the squad');}
+/* banner editor */
+let bnTab='c';
+function openBannerEdit(){bnEditRet=document.activeElement;$('bnEdit').hidden=false;renderBannerEdit();const f=$('bnEdit').querySelector('.bnTabs button[aria-selected="true"]');if(f)f.focus();uiTick(880);}
+let bnEditRet=null;
+function closeBannerEdit(){$('bnEdit').hidden=true;if(bnEditRet&&bnEditRet.focus)try{bnEditRet.focus();}catch(e){}}
+function renderBannerEdit(){
+  const pv=$('bnPreview');pv.textContent='';pv.append(bannerEl(myBanner,{name:callsign,rank:rankFor(stats.kills).r.name,me:true,big:true}));
+  document.querySelectorAll('#bnEdit .bnTabs button').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.bt===bnTab)));
+  const g=$('bnOpts');g.textContent='';g.className='bnOpts bt-'+bnTab;
+  const list=bnTab==='c'?BN_COLORS:bnTab==='p'?BN_PATTERNS:bnTab==='e'?BN_EMBLEMS:BN_TITLES;
+  list.forEach(it=>{
+    const open=bnOpen(it),on=myBanner[bnTab]===it.id;
+    const b=document.createElement('button');b.type='button';b.className='bnOpt'+(on?' on':'')+(open?'':' locked');b.setAttribute('aria-pressed',String(on));
+    if(bnTab==='c'){const s=document.createElement('i');s.style.background='linear-gradient(160deg,'+it.a+','+it.b+')';s.style.boxShadow='inset 0 -4px 0 '+it.acc;b.append(s);}
+    else if(bnTab==='p'){const C=bnFind(BN_COLORS,myBanner.c),s=document.createElement('i');s.style.background=(it.css==='none'?'':it.css+',')+'linear-gradient(160deg,'+C.a+','+C.b+')';b.append(s);}
+    else if(bnTab==='e'){const sv=document.createElementNS(SVGNS,'svg');sv.setAttribute('viewBox','0 0 64 64');const p=document.createElementNS(SVGNS,'path');p.setAttribute('d',it.d);p.setAttribute('fill-rule','evenodd');sv.append(p);b.append(sv);}
+    const n=document.createElement('span');n.textContent=it.name;b.append(n);
+    if(!open){const l=document.createElement('small');l.textContent='🔒 '+it.how;b.append(l);b.disabled=true;}
+    else b.addEventListener('click',()=>{myBanner[bnTab]=it.id;saveBanner();renderBannerEdit();uiTick(980);});
+    g.append(b);
+  });
+}
+
+$('bnClose').addEventListener('click',closeBannerEdit);
+$('bnEdit').addEventListener('click',e=>{if(e.target===$('bnEdit'))closeBannerEdit();});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('bnEdit').hidden){e.stopPropagation();closeBannerEdit();}},true);
+document.querySelectorAll('#bnEdit .bnTabs button').forEach(b=>b.addEventListener('click',()=>{bnTab=b.dataset.bt;renderBannerEdit();uiTick(740);}));
+$('sqLeave').addEventListener('click',leaveSquad);
+setInterval(()=>{if(state==='menu')try{renderSquadLine();}catch(e){}},1000);
+try{renderSquadLine();}catch(e){}
+// the map name in the hero is as big as its column allows, never cut off
+function fitHeroName(){
+  const h=$('heroName');if(!h)return;
+  h.style.removeProperty('font-size');
+  const cs=getComputedStyle(h),max=parseFloat(cs.fontSize)||90,w=h.clientWidth;
+  if(!w||h.scrollWidth<=w+1)return;
+  h.style.setProperty('font-size',Math.max(30,Math.floor(max*w/h.scrollWidth*0.98))+'px','important');
+}
+addEventListener('resize',()=>{clearTimeout(fitHeroName.t);fitHeroName.t=setTimeout(fitHeroName,80);});
+setTimeout(fitHeroName,300);try{document.fonts.ready.then(fitHeroName);}catch(e){}
 const _deploy=resetGame;
 frame();
 };
