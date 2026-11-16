@@ -209,3 +209,35 @@
     site:site
   };
 })();
+
+/* Auto-update: every minute (and whenever the tab comes back into view) the page checks version.json. When the
+   site has a newer build it reloads by itself if the player is on the menus or away from the tab; during a match it
+   shows a small "New version" bar instead, so nobody gets kicked out mid-fight. */
+(function(){
+  var mine=window.DUSTLINE_BUILD;if(!mine)return;
+  var newer=null,bar=null;
+  function check(){
+    return fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;})
+      .then(function(j){if(j&&j.build&&j.build!==mine){newer=j.build;maybe();}}).catch(function(){});
+  }
+  function shown(id){var e=document.getElementById(id);if(!e)return false;var cs=getComputedStyle(e);return cs.display!=='none'&&cs.visibility!=='hidden';}
+  function typing(){var a=document.activeElement;return a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA');}
+  function safe(){
+    if(document.hidden)return true;
+    if(document.pointerLockElement)return false;
+    return (shown('menu')||shown('gate')||shown('title'))&&!shown('hud')&&!typing();
+  }
+  function go(){var u=location.href.replace(/[?&]v=[^&#]*/,'').replace(/#.*$/,'');location.replace(u+(u.indexOf('?')<0?'?':'&')+'v='+newer);}
+  function maybe(){
+    if(!newer)return;
+    if(safe())return go();
+    if(!bar){bar=document.createElement('div');
+      bar.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:99999;background:rgba(3,13,24,.92);color:#e2f6ff;border:1px solid #38c8ff;padding:7px 12px;font:600 13px system-ui,sans-serif;border-radius:4px;display:flex;gap:10px;align-items:center';
+      bar.innerHTML='<span>New version of Dustline ready</span>';
+      var b=document.createElement('button');b.textContent='Update now';b.style.cssText='background:#38c8ff;color:#031018;border:0;padding:4px 10px;font:700 12px system-ui,sans-serif;cursor:pointer;border-radius:3px';
+      b.onclick=go;bar.appendChild(b);(document.body||document.documentElement).appendChild(bar);}
+  }
+  setInterval(function(){if(newer)maybe();else check();},60000);
+  setInterval(maybe,5000);
+  document.addEventListener('visibilitychange',function(){if(document.hidden)maybe();else check();});
+})();

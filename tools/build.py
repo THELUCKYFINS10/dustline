@@ -7,7 +7,7 @@ usage: build.py <artifact_dir> <out_dir>
 The game runs unchanged: this only adds, at the top of <head>, the Firebase SDK, the site's Firebase config and
 claude-shim.js, which gives the game the same claude.use('user'|'db'|'room') tools it has on claude.ai.
 """
-import os, re, shutil, sys
+import hashlib, json, os, re, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
@@ -17,11 +17,17 @@ def main(art, out):
     html = open(page, encoding='utf-8').read()
     if 'claude-shim.js' in html:
         sys.exit('index.html already has the shim; pass the artifact files, not a built site')
-    inject = ('<script src="config.js"></script>'
+    h = hashlib.sha256(html.encode('utf-8'))
+    for f in ('claude-shim.js', 'config.js'):
+        h.update(open(os.path.join(SRC, f), 'rb').read())
+    build = h.hexdigest()[:12]
+    # the build id lets open pages notice a newer site and refresh themselves (see claude-shim.js)
+    inject = ('<script>window.DUSTLINE_BUILD="%s";</script>'
+              '<script src="config.js?v=%s"></script>'
               '<script src="vendor/firebase-app-compat.js"></script>'
               '<script src="vendor/firebase-auth-compat.js"></script>'
               '<script src="vendor/firebase-database-compat.js"></script>'
-              '<script src="claude-shim.js"></script>')
+              '<script src="claude-shim.js?v=%s"></script>') % (build, build, build)
     m = re.search(r'<head[^>]*>', html, re.I)
     if not m:
         sys.exit('no <head> in index.html')
@@ -40,7 +46,8 @@ def main(art, out):
     shutil.copy2(os.path.join(SRC, 'claude-shim.js'), os.path.join(out, 'claude-shim.js'))
     shutil.copy2(os.path.join(SRC, 'config.js'), os.path.join(out, 'config.js'))
     open(os.path.join(out, '.nojekyll'), 'w').close()
-    print('built', out, 'from', art)
+    json.dump({'build': build}, open(os.path.join(out, 'version.json'), 'w'))
+    print('built', out, 'from', art, 'build', build)
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
