@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="2c681f768d67";</script><script src="config.js?v=2c681f768d67"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=2c681f768d67"></script><script src="claude-shim.js?v=2c681f768d67"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="1f8e2870b659";</script><script src="config.js?v=1f8e2870b659"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=1f8e2870b659"></script><script src="claude-shim.js?v=1f8e2870b659"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -6986,20 +6986,39 @@ function skinMat(tone,seed){const r=skinRng(seed);return paintTex(256,(x,s)=>{no
 function faceMat(o){
   const r=skinRng(o.seed||3);
   const m=paintTex(1024,(x,s)=>{
+    // textures load flipped (row 0 is the bottom of the head), so paint upside down: v here = angle from the crown
+    x.setTransform(1,0,0,-1,0,s);
     noiseFill(x,s,r,o.skin,.045,s*s*.15);
     const U=u=>u*s,V=v=>v*s;
     // soft cheek / nose colour
     const blush=(u,v,rad,a)=>{const g=x.createRadialGradient(U(u),V(v),0,U(u),V(v),rad*s);g.addColorStop(0,'rgba(170,70,60,'+a+')');g.addColorStop(1,'rgba(170,70,60,0)');x.fillStyle=g;x.fillRect(0,0,s,s);};
     blush(.44,.52,.05,.12);blush(.56,.52,.05,.12);blush(.5,.545,.03,.1);
-    // eyes (painted lids and lashes around the modelled eyeballs) and brows
+    // pores and fine skin texture
+    for(let i=0;i<26000;i++){const px=r()*s,py=r()*s;x.fillStyle=r()<.5?'rgba(90,40,30,'+(r()*.07)+')':'rgba(255,230,210,'+(r()*.05)+')';x.fillRect(px,py,1+r(),1+r());}
+    // sun freckles and blotches across nose and cheeks
+    for(let i=0;i<(o.age?420:160);i++){const u=.5+(r()-.5)*.26,v=.43+r()*.2;x.fillStyle='rgba(120,60,35,'+(r()*.12)+')';x.beginPath();x.arc(U(u),V(v),1+r()*2.6,0,7);x.fill();}
+    blush(.5,.58,.025,.16);
+    // eye surroundings: soft shadow under the brow, a lid crease and darker skin under the eyes
     [-1,1].forEach(sd=>{const u=.5+sd*.0605,v=.448;
-      x.fillStyle='rgba(40,25,20,.55)';x.beginPath();x.ellipse(U(u),V(v),.027*s,.011*s,0,0,7);x.fill();
-      x.strokeStyle='rgba(20,12,10,.85)';x.lineWidth=s*.004;x.beginPath();x.ellipse(U(u),V(v-.002),.026*s,.009*s,0,Math.PI*1.05,Math.PI*1.95);x.stroke();
+      const sh=x.createRadialGradient(U(u),V(v-.006),0,U(u),V(v-.006),.05*s);sh.addColorStop(0,'rgba(70,35,25,.28)');sh.addColorStop(1,'rgba(70,35,25,0)');x.fillStyle=sh;x.fillRect(0,0,s,s);
+      x.strokeStyle='rgba(70,35,28,.45)';x.lineWidth=s*.0025;x.beginPath();x.ellipse(U(u),V(v-.006),.028*s,.016*s,0,Math.PI*1.08,Math.PI*1.92);x.stroke();
+      x.strokeStyle='rgba(80,40,40,.22)';x.lineWidth=s*.004;x.beginPath();x.ellipse(U(u),V(v+.013),.024*s,.01*s,0,Math.PI*.15,Math.PI*.85);x.stroke();
+      if(o.age){x.strokeStyle='rgba(70,35,25,.3)';x.lineWidth=s*.0014;for(let k=0;k<4;k++){x.beginPath();x.moveTo(U(u+sd*.03),V(v-.004+k*.006));x.lineTo(U(u+sd*.052),V(v-.012+k*.011));x.stroke();}}
       x.strokeStyle=o.brow;x.lineCap='round';
-      for(let k=0;k<26;k++){const t=k/25;x.lineWidth=s*(.0035+r()*.002);x.globalAlpha=.6+r()*.3;
-        const bx=u-sd*.035+sd*t*.07,by=v-.045-Math.sin(t*Math.PI)*.012+(o.heavyBrow?-.004:0);x.beginPath();x.moveTo(U(bx),V(by+.004));x.lineTo(U(bx+sd*.008),V(by-.004));x.stroke();}
+      for(let k=0;k<70;k++){const t=r();x.lineWidth=s*(.0016+r()*.0018);x.globalAlpha=.55+r()*.4;
+        const bx=u-sd*.033+sd*t*.07,by=v-.044-Math.sin(t*Math.PI)*.012+(o.heavyBrow?-.003:0)+(r()-.5)*(.012-.008*t);
+        x.beginPath();x.moveTo(U(bx),V(by+.004));x.lineTo(U(bx+sd*(.006+.004*t)),V(by-.003));x.stroke();}
       x.globalAlpha=1;});
-    if(o.lips){x.fillStyle=o.lips;x.beginPath();x.ellipse(U(.5),V(.612),.03*s,.009*s,0,0,7);x.fill();}
+    if(o.age){for(let k=0;k<3;k++){x.strokeStyle='rgba(80,40,30,.22)';x.lineWidth=s*.0018;x.beginPath();x.moveTo(U(.43),V(.35+k*.016));x.quadraticCurveTo(U(.5),V(.343+k*.016),U(.57),V(.35+k*.016));x.stroke();}
+      [-1,1].forEach(sd=>{x.strokeStyle='rgba(80,40,30,.25)';x.beginPath();x.moveTo(U(.5+sd*.008),V(.4));x.lineTo(U(.5+sd*.01),V(.425));x.stroke();});}
+    // nostrils
+    [-1,1].forEach(sd=>{x.fillStyle='rgba(40,18,14,.75)';x.beginPath();x.ellipse(U(.5+sd*.011),V(.545),.0065*s,.0035*s,sd*.4,0,7);x.fill();});
+    // stubble where a beard isn't
+    if(o.stubble){for(let i=0;i<14000;i++){const u=.5+(r()-.5)*.36,v=.53+r()*.4;if(Math.abs(u-.5)<.03&&v<.57)continue;x.fillStyle=o.stubble;x.globalAlpha=.25+r()*.35;x.fillRect(U(u),V(v),1,1.5);}x.globalAlpha=1;}
+    // lips lined up with the sculpted lips
+    if(o.lips){x.fillStyle=o.lips;x.beginPath();x.ellipse(U(.5),V(.576),.024*s,.0055*s,0,0,7);x.fill();x.beginPath();x.ellipse(U(.5),V(.603),.022*s,.007*s,0,0,7);x.fill();
+      x.strokeStyle='rgba(60,25,20,.7)';x.lineWidth=s*.0022;x.beginPath();x.moveTo(U(.475),V(.589));x.quadraticCurveTo(U(.5),V(.592),U(.525),V(.589));x.stroke();
+      x.fillStyle='rgba(255,230,220,.18)';x.beginPath();x.ellipse(U(.5),V(.6),.01*s,.002*s,0,0,7);x.fill();}
     // hair cover on the scalp (under hats and hoods)
     if(o.hair){for(let i=0;i<9000;i++){const u=r(),v=r()*.42;const front=Math.abs(u-.5)<.14&&v>.25;if(front)continue;
       x.strokeStyle=o.hair[Math.floor(r()*o.hair.length)];x.globalAlpha=.55+r()*.4;x.lineWidth=1+r()*2;
@@ -7014,10 +7033,6 @@ function faceMat(o){
   },{bump:1.2,mat:{roughness:.6}});
   return m;
 }
-function eyeMat(iris){return paintTex(128,(x,s)=>{x.fillStyle='#e8e2d8';x.fillRect(0,0,s,s);
-  // the eyeball's front (+z) maps to u=.5, v=.5
-  const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s*.16);g.addColorStop(0,'#050505');g.addColorStop(.32,'#050505');g.addColorStop(.36,iris);g.addColorStop(.92,iris);g.addColorStop(1,'#1b1410');
-  x.fillStyle=g;x.beginPath();x.ellipse(s/2,s/2,s*.08,s*.16,0,0,7);x.fill();},{bump:.2,mat:{roughness:.12}});}
 function denimMat(o){const r=skinRng(o.seed);
   return paintTex(1024,(x,s)=>{
     x.fillStyle=o.base;x.fillRect(0,0,s,s);
@@ -7056,21 +7071,81 @@ function strandsMat(cols,o){const r=skinRng(o.seed);
   const map=toTex(c,true);
   return new THREE.MeshStandardMaterial({map,normalMap:normalFrom(c,2),roughness:.62,metalness:0,alphaTest:.45,side:THREE.DoubleSide,envMapIntensity:.6});
 }
-// common anatomy: head with sculpted face, eyeballs, ears, neck, hands with fingers
+function eyeMat(iris){
+  // the eyeball's front (+z) maps to u=.5, v=.5; u runs all the way round (2*pi), v top to bottom (pi)
+  const c=canvasTex(512,(x,s)=>{
+    const r=skinRng(iris.length*7+iris.charCodeAt(1));
+    // sclera: warm white, pinker and greyer towards the corners, a few fine veins
+    const sg=x.createRadialGradient(s/2,s/2,s*.05,s/2,s/2,s*.42);sg.addColorStop(0,'#f2ede4');sg.addColorStop(.6,'#e9e0d4');sg.addColorStop(1,'#cbb8a8');
+    x.fillStyle=sg;x.fillRect(0,0,s,s);
+    for(let i=0;i<26;i++){const a=r()*Math.PI*2,r0=s*(.2+r()*.05);let px=s/2+Math.cos(a)*r0*.5,py=s/2+Math.sin(a)*r0;
+      x.strokeStyle='rgba(170,60,55,'+(.15+r()*.25)+')';x.lineWidth=.6+r()*.8;x.beginPath();x.moveTo(px,py);
+      for(let k=0;k<6;k++){px+=Math.cos(a)*s*.012+(r()-.5)*4;py+=Math.sin(a)*s*.022+(r()-.5)*4;x.lineTo(px,py);}x.stroke();}
+    // iris (an ellipse in this mapping that wraps to a circle on the ball)
+    x.save();x.translate(s/2,s/2);x.scale(1,2);
+    const R=s*.068;
+    const ig=x.createRadialGradient(0,0,R*.25,0,0,R);ig.addColorStop(0,'#1a120c');ig.addColorStop(.3,iris);ig.addColorStop(.75,iris);ig.addColorStop(.93,'rgba(20,14,10,.9)');ig.addColorStop(1,'rgba(20,14,10,0)');
+    x.fillStyle=ig;x.beginPath();x.arc(0,0,R,0,7);x.fill();
+    // radial fibres and the lighter collarette ring
+    for(let i=0;i<160;i++){const a=r()*Math.PI*2,a0=R*(.32+r()*.1),a1=R*(.7+r()*.25);
+      x.strokeStyle=r()<.5?'rgba(255,240,210,'+(.08+r()*.14)+')':'rgba(0,0,0,'+(.1+r()*.18)+')';x.lineWidth=.6+r()*.9;
+      x.beginPath();x.moveTo(Math.cos(a)*a0,Math.sin(a)*a0);x.lineTo(Math.cos(a+(r()-.5)*.08)*a1,Math.sin(a+(r()-.5)*.08)*a1);x.stroke();}
+    x.strokeStyle='rgba(255,235,190,.22)';x.lineWidth=R*.08;x.beginPath();x.arc(0,0,R*.45,0,7);x.stroke();
+    // pupil
+    x.fillStyle='#030303';x.beginPath();x.arc(0,0,R*.3,0,7);x.fill();
+    // catchlight
+    x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.arc(-R*.28,-R*.3,R*.11,0,7);x.fill();
+    x.fillStyle='rgba(255,255,255,.35)';x.beginPath();x.arc(R*.25,R*.22,R*.05,0,7);x.fill();
+    x.restore();});
+  const map=toTex(c,true);
+  return new THREE.MeshStandardMaterial({map,roughness:.08,metalness:0,envMapIntensity:1});
+}
+// common anatomy: head with sculpted face, eyeballs in lidded sockets, ears, neck, hands with fingers
 function buildHead(B,M,o){
   const H=B.J('Head'),c=new V3(0,H.y+.094,H.z+.026);
   const g=(ph,th,p0,t0,sp,st)=>Math.exp(-Math.pow((ph-p0)/sp,2)-Math.pow((th-t0)/st,2));
-  const head=gEllip(c,.077,.112,.098,{nt:40,np:48,uvFull:true,def:(th,ph,p)=>{
-    const out=.024*(o.nose||1)*g(ph,th,0,1.66,.15,.17)+.008*g(ph,th,0,1.45,.1,.22)+.008*(g(ph,th,.4,1.27,.25,.08)+g(ph,th,-.4,1.27,.25,.08))
-      -.011*(g(ph,th,.38,1.4,.17,.09)+g(ph,th,-.38,1.4,.17,.09))+.006*(g(ph,th,.75,1.55,.25,.2)+g(ph,th,-.75,1.55,.25,.2))
-      +.012*g(ph,th,0,2.2,.32,.25)+.004*g(ph,th,0,1.9,.15,.06)+.01*g(Math.abs(ph),th,Math.PI,1.15,.8,.5);
+  const sym=(ph,th,p0,t0,sp,st)=>g(ph,th,p0,t0,sp,st)+g(ph,th,-p0,t0,sp,st);
+  const nose=o.nose||1;
+  const head=gEllip(c,.077,.112,.098,{nt:84,np:104,uvFull:true,def:(th,ph,p)=>{
+    const out=
+      // brow ridge and forehead
+      .008*sym(ph,th,.4,1.27,.25,.08)+.003*g(ph,th,0,1.0,.5,.25)
+      // eye sockets, temples
+      -.013*sym(ph,th,.38,1.41,.15,.085)-.004*sym(ph,th,1.05,1.2,.2,.18)
+      // cheekbones and cheeks
+      +.007*sym(ph,th,.72,1.56,.22,.14)+.004*sym(ph,th,.55,1.75,.2,.16)
+      // nose: bridge, tip, wings (alae) either side, the groove beside them
+      +nose*(.009*g(ph,th,0,1.47,.075,.13)+.015*g(ph,th,0,1.6,.085,.09)+.019*g(ph,th,0,1.67,.1,.075))
+      +nose*.008*sym(ph,th,.125,1.69,.065,.05)-.004*sym(ph,th,.2,1.66,.05,.08)
+      // nasolabial folds
+      -.0025*sym(ph,th,.3,1.8,.06,.12)
+      // philtrum, lips and the line of the mouth
+      -.0018*g(ph,th,0,1.765,.03,.03)+.0055*g(ph,th,0,1.805,.2,.035)-.0045*g(ph,th,0,1.85,.24,.018)+.006*g(ph,th,0,1.9,.17,.04)
+      -.002*sym(ph,th,.25,1.85,.04,.05)
+      // chin and jaw, back of the skull
+      +.012*g(ph,th,0,2.2,.3,.22)-.003*g(ph,th,0,2.05,.18,.05)+.004*sym(ph,th,.9,2.15,.3,.2)
+      +.01*g(Math.abs(ph),th,Math.PI,1.15,.8,.5);
     const l=p.length()||1;p.multiplyScalar(1+out/l);
     if(th>1.6){const k=Math.min(1,(th-1.6)/.9);p.x*=1-.22*k*(Math.cos(ph)>0?1:.6);}
   }});
   B.add(head,M.face,['Head','Neck']);
+  const lash=M.lash||(M.lash=new THREE.MeshStandardMaterial({color:0x140d09,roughness:.7}));
+  const lid=M.lid||M.skin;
   [-1,1].forEach(s=>{
-    B.add(gEllip(new V3(s*.03,c.y+.018,c.z+.073),.0125,.0125,.0125,{nt:12,np:16,uvFull:true}),M.eye,['Head']);
-    B.add(gEllip(new V3(s*.079,c.y,c.z-.008),.011,.03,.02,{nt:10,np:14,def:(th,ph,p)=>{p.z+=-.006*Math.sin(th);}}),M.skin,['Head']);
+    const E=new V3(s*.0305,c.y+.017,c.z+.074),er=.0128;
+    B.add(gEllip(E,er,er,er,{nt:16,np:20,uvFull:true}),M.eye,['Head']);
+    // upper and lower lids: skin shells just over the ball, leaving an almond opening (a little tilted, the
+    // outer corner higher), with a lash line along the upper edge
+    const tilt=th=>th;
+    B.add(gEllip(E,er+.0016,er+.0018,er+.0016,{nt:10,np:18,t0:0,t1:1.32,p0:-1.5,p1:1.5,def:(th,ph,p)=>{p.y+=.0012*Math.sin(ph)*s;if(th>1.15)p.multiplyScalar(1+.06*(th-1.15));}}),lid,['Head']);
+    B.add(gEllip(E,er+.0012,er+.0014,er+.0012,{nt:6,np:18,t0:1.98,t1:2.7,p0:-1.4,p1:1.4,def:(th,ph,p)=>{p.y+=.0008*Math.sin(ph)*s;}}),lid,['Head']);
+    const L=[];for(let i=0;i<=14;i++){const ph=-1.25+i/14*2.5,th=1.32;L.push(new V3(E.x+Math.sin(th)*Math.sin(ph)*(er+.0022),E.y+Math.cos(th)*(er+.0024)+.0012*Math.sin(ph)*s-.0006,E.z+Math.sin(th)*Math.cos(ph)*(er+.0022)));}
+    B.add(gTube(L.map((p,i)=>({c:p,t:(L[i+1]||p).clone().sub(L[i-1]||p),f:new V3(0,0,1),rx:.0011-.0004*Math.abs(i-7)/7,ry:.0016})),{n:6}),lash,['Head']);
+    // ears: lobe with a rolled helix rim
+    const ec=new V3(s*.079,c.y,c.z-.008);
+    B.add(gEllip(ec,.011,.03,.02,{nt:14,np:18,def:(th,ph,p)=>{p.z+=-.006*Math.sin(th);p.x+=s*.003*Math.cos(ph);}}),M.skin,['Head']);
+    const hx=[];for(let i=0;i<=16;i++){const a=-.3+i/16*3.4;hx.push(new V3(ec.x+s*.006,ec.y+Math.cos(a)*.027,ec.z-.004-Math.sin(a)*.018));}
+    B.add(gTube(hx.map((p,i)=>({c:p,t:(hx[i+1]||p).clone().sub(hx[i-1]||p),f:new V3(s,0,0),rx:.0035,ry:.004})),{n:8}),M.skin,['Head']);
   });
   return c;
 }
@@ -7133,7 +7208,7 @@ function buildPrime(B){
   const H=B.J('Head'),N=B.J('Neck');
   const hc=buildHead(B,M,{});
   // neck gaiter (continues the mask)
-  B.add(gTube([0,.5,1].map(t=>({c:new V3(0,N.y-.03+t*.1,N.z+.01),t:new V3(0,1,0),f:new V3(0,0,1),rx:.06-.006*t,ry:.062-.004*t})),{n:24}),M.face,['Neck','Head','Spine2']);
+  B.add(gTube([0,.5,1].map(t=>({c:new V3(0,N.y-.03+t*.1,N.z+.01),t:new V3(0,1,0),f:new V3(0,0,1),rx:.06-.006*t,ry:.062-.004*t})),{n:24}),M.rib,['Neck','Head','Spine2']);
   // torso: oversized zip hoodie
   const S2=B.J('Spine2');
   const tor=[[1.0,.188,.14,.005],[1.06,.183,.135,0],[1.15,.178,.13,-.005],[1.25,.193,.132,-.014],[1.35,.208,.137,-.024],[1.42,.218,.132,-.034],[1.47,.198,.12,-.044],[1.51,.14,.1,-.052],[1.535,.09,.08,-.056]];
@@ -7185,7 +7260,7 @@ function buildStaples(B){
     for(let u=0;u<s;u+=9){x.fillStyle='rgba(225,205,170,.55)';x.fillRect(u,6,5,2);x.fillRect(u,s-8,5,2);}},{bump:2.2,mat:{roughness:.6}});
   const M={
     skin:skinMat('#c9946f',13),hand:skinMat('#c48f6b',14),
-    face:faceMat({seed:23,skin:'#c9946f',brow:'#2e2013',heavyBrow:true,lips:'rgba(130,70,60,.55)',hair:['#3d2a17','#4f371f','#2e1f11']}),
+    face:faceMat({seed:23,skin:'#c9946f',brow:'#2e2013',heavyBrow:true,age:true,stubble:'#3a2a1c',lips:'rgba(140,72,62,.6)',hair:['#3d2a17','#4f371f','#2e1f11']}),
     eye:eyeMat('#4d6a7a'),
     // sun-aged bone-white felt: grain, sweat stain above the band, dust at the brim edge
     felt:paintTex(1024,(x,s)=>{const r=skinRng(81);noiseFill(x,s,r,'#d6c9ad',.06,s*s*.2);
@@ -7224,6 +7299,11 @@ function buildStaples(B){
       noiseFill.call(null,{fillStyle:'',fillRect(){}},0,r,'',0,0);},{bump:1,mat:{roughness:.9,side:THREE.DoubleSide},rep:[2,2]}),
     denim:denimMat({seed:121,base:'#1a1b1f',twill:.12,wash:.12,stitch:'rgba(150,120,70,.8)',creases:.32,rips:[]}),
     belt:leatherTool('#3a2414',125,true),
+    gunbelt:paintTex(512,(x,s)=>{const r=skinRng(127);noiseFill(x,s,r,'#4a2e18',.08);
+      // cartridge loops with brass rims showing
+      for(let u=4;u<s;u+=16){x.fillStyle='rgba(0,0,0,.35)';x.fillRect(u,s*.2,12,s*.6);x.fillStyle='#b8913f';x.fillRect(u+2,s*.22,8,s*.18);x.fillStyle='rgba(255,240,190,.5)';x.fillRect(u+3,s*.23,2,s*.14);x.fillStyle='rgba(90,60,30,.9)';x.fillRect(u+1,s*.42,10,s*.36);}
+      for(let u=0;u<s;u+=8){x.fillStyle='rgba(225,205,170,.5)';x.fillRect(u,s*.1,5,2);x.fillRect(u,s*.88,5,2);}},{bump:2.4,mat:{roughness:.6},rep:[2,1]}),
+    grip:paintTex(128,(x,s)=>{const r=skinRng(129);x.fillStyle='#5a3218';x.fillRect(0,0,s,s);for(let i=0;i<60;i++){x.strokeStyle='rgba(30,14,6,'+(.2+r()*.3)+')';x.beginPath();x.moveTo(0,r()*s);x.bezierCurveTo(s*.3,r()*s,s*.6,r()*s,s,r()*s);x.stroke();}},{bump:1,mat:{roughness:.35}}),
     boot:leatherTool('#2a1a10',131,true),
     bootDark:leatherMat('#120c08',{seed:133,mat:{roughness:.55}}),
     sole:leatherMat('#0b0806',{seed:132,mat:{roughness:.7}}),
@@ -7292,10 +7372,20 @@ function buildStaples(B){
   B.add(gTube([0,1].map(t=>({c:new V3(0,.95+t*.045,.008),t:new V3(0,1,0),f:new V3(0,0,1),rx:.184,ry:.13})),{n:44,us:2}),M.belt,['Hips','Spine']);
   B.add(gEllip(new V3(0,.972,.146),.036,.026,.008,{nt:10,np:18}),M.silver,['Hips']);
   B.add(gEllip(new V3(0,.972,.152),.022,.015,.004,{nt:8,np:14}),M.brass,['Hips']);
+  // gun belt slung low and tilted, with cartridge loops, and a holstered revolver on the right thigh
+  B.add(gTube([0,1].map(t=>({c:new V3(0,.88+t*.04,.012),t:new V3(.18,1,0).normalize(),f:new V3(0,0,1),rx:.19,ry:.136})),{n:48,us:3}),M.gunbelt,['Hips','LeftUpLeg','RightUpLeg']);
+  {const hx=-.1,hy=.79,hzz=.128;
+    B.add(gTube([0,.5,1].map(t=>({c:new V3(hx-t*.006,hy-t*.17,hzz-t*.01),t:new V3(-.04,-1,-.06),f:new V3(-.6,0,.8),rx:.028-.006*t,ry:.019-.003*t})),{n:14,sq:2.4,cap1:1}),M.belt,['RightUpLeg','Hips']);
+    B.add(gTube([0,1].map(t=>({c:new V3(hx,hy-.005-t*.035,hzz+.016),t:new V3(0,-1,0),f:new V3(-.6,0,.8),rx:.03,ry:.004})),{n:10,sq:3}),M.belt,['RightUpLeg','Hips']);
+    // revolver: hammer and walnut grip above the holster
+    B.add(gTube([0,.5,1].map(t=>({c:new V3(hx+.004,hy+.01+t*.05,hzz-.004+t*.022),t:new V3(.05,1,.45),f:new V3(-.6,0,.8),rx:.012+.002*t,ry:.009})),{n:12,sq:2.2,cap1:1}),M.grip,['RightUpLeg','Hips']);
+    B.add(gTube([0,1].map(t=>({c:new V3(hx+.003,hy+.012+t*.012,hzz-.012-t*.004),t:new V3(0,1,-.3),f:new V3(-.6,0,.8),rx:.011,ry:.008})),{n:10,sq:3,cap1:1}),M.silver,['RightUpLeg','Hips']);
+    // tie-down thong round the thigh
+    B.add(gTube([0,1].map(t=>({c:new V3(hx+.03,.6+t*.008,.01),t:new V3(0,1,0),f:new V3(0,0,1),rx:.07,ry:.074})),{n:20}),M.bootDark,['RightUpLeg']);}
   // long duster, open at the front, flaring past the knee, buttons down each front edge
   const coat=[[.5,.27,.18,.012],[.62,.262,.176,.01],[.76,.25,.166,.008],[.9,.236,.154,.006],[1.04,.22,.144,.002],[1.17,.212,.136,-.006],[1.3,.222,.14,-.018],[1.42,.23,.136,-.032],[1.48,.21,.124,-.044],[1.52,.155,.106,-.052],[1.55,.104,.092,-.056]];
   const gap=y=>y>1.47?.0:(y>1.25?.5:(y>.98?.44:.62+(.98-y)*.6));
-  B.add(gTube(coat.map(([y,rx,rz,z])=>({c:new V3(0,y,z),t:new V3(0,1,0),f:new V3(0,0,1),rx,ry:rz,m:a=>1+.014*Math.sin(a*9+y*7)+.01*Math.sin(a*23+y*3)})),{n:56,us:2,vs:1.4,
+  B.add(gTube(coat.map(([y,rx,rz,z])=>({c:new V3(0,y,z),t:new V3(0,1,0),f:new V3(0,0,1),rx,ry:rz,m:a=>1+(.012+Math.max(0,1.05-y)*.045)*Math.sin(a*9+y*7)+.008*Math.sin(a*23+y*3)})),{n:72,us:2,vs:1.4,
     skip:(k,j,a)=>{const y=(coat[k][0]+coat[k+1][0])/2;return Math.abs(Math.atan2(Math.sin(a-Math.PI/2),Math.cos(a-Math.PI/2)))<gap(y);}}),
     M.coat,{Hips:2.2,Spine:1,Spine1:1,Spine2:1,Neck:.5,LeftUpLeg:.55,RightUpLeg:.55,LeftShoulder:.6,RightShoulder:.6});
   [-1,1].forEach(sd=>[1.02,1.12,1.22,1.32].forEach(y=>{const g=gap(y)+.04,r=coat.find(c=>c[0]>=y)||coat[5];
@@ -7307,14 +7397,19 @@ function buildStaples(B){
   B.add(gTube(cape.map(([y,rx,rz,z])=>({c:new V3(0,y,z),t:new V3(0,1,0),f:new V3(0,0,1),rx,ry:rz,m:a=>1+.018*Math.sin(a*11)})),{n:48,us:2,vs:1.2,
     skip:(k,j,a)=>Math.abs(Math.atan2(Math.sin(a-Math.PI/2),Math.cos(a-Math.PI/2)))<.48}),M.coat,{Spine2:2.2,Neck:.6,LeftShoulder:.7,RightShoulder:.7,Spine1:.4});
   // lapels folded back on the chest, with a standing collar
-  [-1,1].forEach(sd=>B.add(gSheet((u,v,p)=>{const y=1.48-v*.24,w=.075*(1-v*.6);p.set(sd*(.04+u*w),y,.118+(1-u)*.014-(y<1.3?.004:0));},4,8,new V3(0,1.35,0)),M.coat,['Spine1','Spine2']));
+  [-1,1].forEach(sd=>{
+    const pts=[];for(let y=.5;y<=1.47;y+=.03){const g=gap(y)+.01,r=coat.reduce((m,c)=>Math.abs(c[0]-y)<Math.abs(m[0]-y)?c:m);
+      pts.push({y,c:new V3(sd*Math.sin(g)*r[1],y,r[3]+Math.cos(g)*r[2])});}
+    // the facing: a turned-back edge, widening into the lapel above the waistcoat's top button
+    B.add(gTube(pts.map((q,i)=>{const lap=q.y>1.22?Math.min(1,(q.y-1.22)/.12):0,nx=pts[i+1]||q,pv=pts[i-1]||q;
+      return {c:q.c.clone().add(new V3(-sd*.008*lap,0,.004)),t:nx.c.clone().sub(pv.c),f:new V3(sd*Math.sin(gap(q.y)),0,Math.cos(gap(q.y))),rx:.005+.017*lap,ry:.0045};}),{n:8,sq:2.6}),M.coat,{Spine:1,Spine1:1,Spine2:1,Hips:1.2});
+  });
   B.add(gTube([0,1].map(t=>({c:new V3(0,N.y-.05+t*.05,N.z-.008),t:new V3(0,1,0),f:new V3(0,0,1),rx:.082+t*.004,ry:.078+t*.004})),{n:30,skip:(k,j,a)=>Math.abs(Math.atan2(Math.sin(a-Math.PI/2),Math.cos(a-Math.PI/2)))<.7}),M.coat,['Neck','Spine2']);
-  // coat sleeves with turned cuffs and fringe under the forearm
+  // coat sleeves with turned cuffs
   ['Left','Right'].forEach(S=>{
     const sd=S==='Left'?1:-1,A=B.J(S+'Arm');
     const pts=[[.14,.074,.07],[.205,.072,.068],[.3,.066,.063],[.432,.058,.056],[.53,.054,.052],[.6,.051,.05],[.645,.058,.056],[.672,.057,.055]];
     B.add(gTube(pts.map(([x,ry,rz],k)=>({c:new V3(sd*x,A.y,A.z),t:new V3(sd,0,0),f:new V3(0,1,0),rx:ry,ry:rz,m:a=>1+.025*Math.sin(a*4+k*2.3)})),{n:24,us:1.5,vs:2}),M.coat,[S+'Shoulder',S+'Arm',S+'ForeArm',S+'Hand','Spine2']);
-    B.add(gSheet((u,v,p)=>{p.set(sd*(.47+u*.15),A.y-.052-v*.11,A.z-.012+Math.sin(u*40)*.004);},10,4,new V3(sd*.55,A.y,A.z)),M.fringe,[S+'ForeArm']);
   });
   buildHands(B,M);
   const rr=B.J('RightHandRing1');if(rr)B.add(gTube([0,1].map(t=>({c:rr.clone().add(new V3(-.008-t*.006,0,0)),t:new V3(-1,0,0),f:new V3(0,1,0),rx:.011,ry:.011})),{n:14,cap0:1,cap1:1}),M.ring,['RightHandRing1','RightHand']);
