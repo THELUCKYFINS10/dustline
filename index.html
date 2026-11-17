@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="21ab15cb67ae";</script><script src="config.js?v=21ab15cb67ae"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=21ab15cb67ae"></script><script src="claude-shim.js?v=21ab15cb67ae"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="eda12e05bab3";</script><script src="config.js?v=eda12e05bab3"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=eda12e05bab3"></script><script src="claude-shim.js?v=eda12e05bab3"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -2147,6 +2147,8 @@ const matGround=pbr(512,(x,s)=>{
   for(let i=0;i<14;i++){x.strokeStyle='rgba(80,60,40,.25)';x.lineWidth=1;x.beginPath();let px=rand()*s,py=rand()*s;x.moveTo(px,py);for(let k=0;k<6;k++){px+=(rand()-.5)*40;py+=(rand()-.5)*40;x.lineTo(px,py);}x.stroke();}
 },2.2,{roughness:.97});
 matGround.map.repeat.set(70,70);matGround.normalMap.repeat.set(70,70);
+const fabricNormal=normalFrom(canvasTex(128,(x,s)=>{x.fillStyle='#808080';x.fillRect(0,0,s,s);for(let i=0;i<s;i+=3){x.fillStyle='rgba(255,255,255,.25)';x.fillRect(i,0,1,s);x.fillStyle='rgba(0,0,0,.25)';x.fillRect(0,i,s,1);}grain(x,s,.4,.2);}),2);
+fabricNormal.repeat.set(4,4);
 const wallDraw=(base,windows)=>(x,s)=>{
   x.fillStyle=base;x.fillRect(0,0,s,s);
   for(let i=0;i<90;i++){x.fillStyle='rgba('+(rand()<.5?'70,55,40':'240,230,210')+','+(rand()*.07)+')';x.beginPath();x.arc(rand()*s,rand()*s,4+rand()*30,0,7);x.fill();}
@@ -5429,8 +5431,6 @@ const camoCanvas=canvasTex(256,(x,s)=>{
   grain(x,s,.3,.1);
 });
 const camoMap=toTex(camoCanvas,true);camoMap.repeat.set(2,2);
-const fabricNormal=normalFrom(canvasTex(128,(x,s)=>{x.fillStyle='#808080';x.fillRect(0,0,s,s);for(let i=0;i<s;i+=3){x.fillStyle='rgba(255,255,255,.25)';x.fillRect(i,0,1,s);x.fillStyle='rgba(0,0,0,.25)';x.fillRect(0,i,s,1);}grain(x,s,.4,.2);}),2);
-fabricNormal.repeat.set(4,4);
 const vestCanvas=canvasTex(128,(x,s)=>{x.fillStyle='#4a4b3a';x.fillRect(0,0,s,s);for(let y=8;y<s;y+=12){x.fillStyle='rgba(0,0,0,.35)';x.fillRect(0,y,s,4);x.fillStyle='rgba(255,255,255,.06)';x.fillRect(0,y+4,s,1);}grain(x,s,.4,.12);});
 const vestBase={map:toTex(vestCanvas,true),normalMap:normalFrom(vestCanvas,3),roughness:.92};
 const mBala=new THREE.MeshStandardMaterial({color:0x26261f,roughness:.95,normalMap:fabricNormal});
