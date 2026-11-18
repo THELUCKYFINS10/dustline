@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="eda12e05bab3";</script><script src="config.js?v=eda12e05bab3"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=eda12e05bab3"></script><script src="claude-shim.js?v=eda12e05bab3"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="dd9d4fb6279b";</script><script src="config.js?v=dd9d4fb6279b"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=dd9d4fb6279b"></script><script src="claude-shim.js?v=dd9d4fb6279b"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -1425,6 +1425,7 @@ button.go:disabled{background:rgba(242,232,213,.12)!important;color:var(--dim)!i
 .mapCard b{font-size:clamp(15px,1.45vw,26px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 20px)}
 .mapCard span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 20px)}
 .mapCard em{max-width:calc(100% - 16px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mapCard i::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,6,9,.88) 0%,rgba(4,6,9,.35) 45%,rgba(4,6,9,0) 75%)}
 /* holo clock and readouts: top right on the Play tab, hidden where panels need the room */
 #menu[data-tab="deploy"] #holo .clock{top:calc(var(--hubTopH,74px) + 26px);bottom:auto;right:28px}
 #menu[data-tab="deploy"] #holo .sys{top:calc(var(--hubTopH,74px) + 44px);bottom:auto;right:160px}
@@ -10965,6 +10966,7 @@ renderTokens();applyFPSkin();
     const b=document.createElement('button');b.type='button';b.className='mapCard';b.id='map-'+id;b.dataset.map=id;b.setAttribute('role','radio');
     b.innerHTML='<i></i><em class="badge"></em><b></b><span></span><u class="rotBar" aria-hidden="true"></u>';
     b.querySelector('b').textContent=MAPS[id].name;b.querySelector('span').textContent=MAPS[id].tag||'';
+    b.querySelector('i').style.backgroundImage='url(map-'+id+'.webp)';
     if(['turks','moon','af1','concourse','stonecrown','skyframe','lastride','wreck'].includes(id))b.querySelector('em').textContent='New';
     if(MAPS[id].language){const w=b.querySelector('em');w.textContent='⚠ Strong language';w.classList.add('langWarn');}
     b.setAttribute('aria-label','Play on '+MAPS[id].name+(MAPS[id].language?'. Warning: contains strong language':''));
