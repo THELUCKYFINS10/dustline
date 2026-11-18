@@ -1,4 +1,4 @@
-<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="dd9d4fb6279b";</script><script src="config.js?v=dd9d4fb6279b"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=dd9d4fb6279b"></script><script src="claude-shim.js?v=dd9d4fb6279b"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><title>Dustline</title><script>window.DUSTLINE_BUILD="e57d5c1a9949";</script><script src="config.js?v=e57d5c1a9949"></script><script src="vendor/firebase-app-compat.js"></script><script src="vendor/firebase-auth-compat.js"></script><script src="rest-db.js?v=e57d5c1a9949"></script><script src="claude-shim.js?v=e57d5c1a9949"></script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
 /* ---------- Holo lobby: a blue holographic HUD skin for the home screen ----------
    Thin cyan line-work, glowing edges and slow rotating rings, kept to the edges and behind the operator so the
@@ -65,6 +65,25 @@
 @media (max-width:900px){#holo .sys,#holo .ticks{display:none}#holo .clock{width:92px;right:16px;bottom:16px}#holo .clock b{font-size:24px}#holo .hoRings{left:50%;opacity:.3}}
 @media (max-height:620px){#holo .sys{display:none}}
 @media (prefers-reduced-motion:reduce){#holo .spin{animation:none}}
+</style>
+<style>
+.maps[hidden]{display:none!important}
+.voteMaps .mapCard em.badge{background:var(--amber);color:#07090c;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:2px 6px}
+.voteMaps .mapCard[aria-checked="true"]::before{content:"YOUR VOTE"}
+.pTabs{display:flex;gap:6px;margin:10px 0 14px;flex-wrap:wrap}
+.pTabs button{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:transparent;color:var(--dim);border:1px solid var(--line);padding:7px 12px;cursor:pointer}
+.pTabs button[aria-selected="true"]{color:var(--ink);border-color:var(--amber);box-shadow:inset 0 -2px 0 var(--amber)}
+.pTabs button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+#pauseFriends .frList{max-height:44vh;overflow:auto;margin:8px 0 12px}
+#specBar{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:30;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 16px;background:rgba(7,9,12,.78);border:1px solid var(--line);color:var(--ink);text-align:center;max-width:calc(100vw - 32px);pointer-events:none}
+#specBar[hidden]{display:none}
+#deployBtn.waitLead{opacity:.62;cursor:not-allowed}
+#specBar .spH{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+#specBar b{font-family:var(--display);font-size:26px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+#specBar .spList{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+#specBar .spChip{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--line);background:transparent;color:var(--dim)}
+#specBar .spChip[aria-pressed="true"]{border-color:var(--amber);color:var(--ink)}
+#specBar .spHint{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
 </style>
 </head><body>
 <!-- Loading screen: key art rendered from the game's own squad, drifting embers, logo and a real progress bar.
@@ -1735,8 +1754,9 @@ button.bnCard:hover,button.bnCard:focus-visible{border-color:var(--bnAcc);outlin
         </div>
 
         <div class="ops">
-          <div class="opsHead"><span>Choose a map</span><em id="mapPickNote">Random: every deployment drops you on any map</em></div>
+          <div class="opsHead"><span id="opsTitle">Choose a map</span><em id="mapPickNote">Random: every deployment drops you on any map</em></div>
           <div class="maps" id="mapCards" role="radiogroup" aria-label="Choose a map"></div>
+          <div class="maps voteMaps" id="voteCards" role="radiogroup" aria-label="Vote for the next map" hidden></div>
         </div>
       </section>
 
@@ -1820,6 +1840,8 @@ button.bnCard:hover,button.bnCard:focus-visible{border-color:var(--bnAcc);outlin
   <div class="card">
     <div class="kicker">Paused</div>
     <h2 id="pauseTitle">Holding position</h2>
+    <div class="pTabs" role="tablist" aria-label="Pause menu"><button type="button" role="tab" id="pTabMatch" aria-selected="true" aria-controls="pauseMatch">Match</button><button type="button" role="tab" id="pTabFriends" aria-selected="false" aria-controls="pauseFriends">Friends &amp; invites</button></div>
+    <div id="pauseMatch" role="tabpanel" aria-labelledby="pTabMatch">
     <div class="actions"><button class="go" id="resumeBtn">Resume</button><button type="button" class="ghost" id="pauseSettingsBtn">Settings</button><button type="button" class="ghost" id="pauseHomeBtn">Quit to home</button><span class="meta">Esc always pauses the game</span></div>
     <div class="padFix" id="padFix" hidden>
       <b>Trackpad stops while you press keys?</b>
@@ -1832,8 +1854,16 @@ button.bnCard:hover,button.bnCard:focus-visible{border-color:var(--bnAcc);outlin
       <button type="button" class="ghost" id="laptopPreset">Use laptop controls</button>
       <span class="meta">Switches crouch and aim to tap-to-toggle and turns on auto-reload, so you hold keys less.</span>
     </div>
+    </div>
+    <div id="pauseFriends" role="tabpanel" aria-labelledby="pTabFriends" hidden>
+      <div class="frMe"><span>Your friend code</span><b id="pfCode">———</b></div>
+      <p class="meta" id="pfNote"></p>
+      <ul class="frList" id="pfList" aria-label="Friends you can invite"></ul>
+      <div class="actions"><button type="button" class="go" id="pfResume">Resume</button></div>
+    </div>
   </div>
 </div>
+<div id="specBar" aria-live="polite" hidden></div>
 
 <div id="over" class="screen" hidden>
   <div class="card">
@@ -1988,7 +2018,7 @@ let best=0;
 try{best=+localStorage.getItem('dustline-best')||0;}catch(e){}
 var mapPick='random';
 try{mapPick=localStorage.getItem('dustline-mappick')||'random';}catch(e){}
-function mapPickLabel(){try{return mapPick!=='random'&&MAPS[mapPick]?MAPS[mapPick].name:'Random map';}catch(e){return 'Random map';}}
+function mapPickLabel(){try{if(mp&&mp.room&&modeSel!=='solo')return 'Squad map vote';return mapPick!=='random'&&MAPS[mapPick]?MAPS[mapPick].name:'Random map';}catch(e){return 'Random map';}}
 function showBest(){const t=best?('Best score '+best.toLocaleString()):'';$('bestLine').textContent=mapPickLabel()+(t?' · '+t:'');$('bestLine2').textContent=t;}
 showBest();
 
@@ -2221,7 +2251,7 @@ function addBox(x,z,w,d,h,mat,y0){
   const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
   m.position.set(x,y0+h/2,z);m.castShadow=true;m.receiveShadow=true;
   mapRoot.add(m);obstacleMeshes.push(m);m.userData.hit=true;
-  const s={minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2,h:y0+h};solids.push(s);
+  const s={minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2,h:y0+h};if(y0>0)s.y0=y0;solids.push(s);   // raised boxes (lintels) leave room to walk underneath
   if((mat===matCrate||mat.userData.crate)&&w<1.6&&h<1.6)DEST.props.push({meshes:[m],s,x,z,base:y0,mat:'wood'});   // supply crates splinter in a blast
   return m;
 }
@@ -6982,7 +7012,7 @@ function smokeBlocks(a,b){
 }
 /* Throwables: each kind's own behaviour. Returns true when the throwable is finished. */
 const fires=[];
-function nadeNearEnemy(n,r){for(const e of enemies){if(e.dead||e.ghost)continue;const p=n.m.position;if(Math.hypot(e.pos.x-p.x,e.pos.z-p.z)<r&&p.y>e.pos.y-.1&&p.y<e.pos.y+2)return e;}return null;}
+function nadeNearEnemy(n,r){for(const e of enemies){if(e.dead)continue;const p=n.m.position;if(Math.hypot(e.pos.x-p.x,e.pos.z-p.z)<r&&p.y>e.pos.y-.1&&p.y<e.pos.y+2)return e;}return null;}
 function throwableTick(n,dt){
   const T=n.td,pos=n.m.position;
   const boom=(R,D)=>explode(pos.clone().add(new V3(0,.15,0)),{R,dmg:D,pR:R*.92,pDmg:D*.9,small:true});
@@ -7031,7 +7061,7 @@ function updateFires(dt){
       if(rand()<.25)addSprite(f.pos.clone().add(new V3(Math.cos(a)*r,1+rand(),Math.sin(a)*r)),smokeTex,0x2e2a26,.8,2.5+rand()*2,2+rand(),new V3((rand()-.5)*.6,1+rand(),(rand()-.5)*.6),false,.55);}
     if(f.tick<=0){
       f.tick=.25;const dmg=f.dps*.25;
-      for(const e of enemies){if(e.dead||e.ghost)continue;if(Math.hypot(e.pos.x-f.pos.x,e.pos.z-f.pos.z)<f.R)damageEnemy(e,dmg,false,{explosive:true,fire:true});}
+      for(const e of enemies){if(e.dead)continue;if(Math.hypot(e.pos.x-f.pos.x,e.pos.z-f.pos.z)<f.R)damageEnemy(e,dmg,false,{explosive:true,fire:true});}
       if(!player.dead&&Math.hypot(player.pos.x-f.pos.x,player.pos.z-f.pos.z)<f.R*.85&&Math.abs(player.pos.y-f.pos.y)<1.5)hurtPlayer(dmg*.35,f.pos);
     }
     if(f.t<=0)fires.splice(i,1);
@@ -9377,7 +9407,7 @@ function gameOver(){
   state='dead';
   if(mp)mpOnGameOver();
   if(document.pointerLockElement)document.exitPointerLock();
-  if(score>best){best=score;try{localStorage.setItem('dustline-best',String(best));}catch(e){}cloudSoon();}
+  const cs=creditScore();if(cs>best){best=cs;try{localStorage.setItem('dustline-best',String(best));}catch(e){}cloudSoon();}
   showBest();recordMatch();
   $('stWave').textContent=wave;$('stScore').textContent=score.toLocaleString();$('stKills').textContent=kills;$('stHs').textContent=headshots;
   $('stAcc').textContent=(shots?Math.min(100,Math.round(hits/shots*100)):0)+'%';
@@ -9946,6 +9976,7 @@ function pause(){
   $('padFix').hidden=!padFreezeTold;
   $('banner').classList.remove('on');bannerT=0;
   $('pause').hidden=false;
+  try{pauseTab('match');}catch(e){}
 }
 function play(){
   wantFullscreen();
@@ -11096,7 +11127,7 @@ function newMp(mode){
     avatars:new Map(),names:{},nameAsked:new Set(),prevW:0,prevC:-1,clears:0,dropId:1,presT:0,pruneT:0,shotN:0,
     frags:0,deaths:0,dc:0,killer:null,killerHead:0,respawnT:0,spawnProt:0,lastAttacker:null,lastHead:false,roundT:0,round:0,roundWin:null,over:false,
     fxOnly:false,deathPos:null,deadT:0,lastN:0,
-    dealt:{},pv:{},hu:{},ku:{},seenH:new Map(),seenC:new Map(),seenV:new Map(),seenD:new Map()};
+    dealt:{},ack:{},hasAck:false,pv:{},hu:{},ku:{},seenH:new Map(),seenC:new Map(),seenV:new Map(),seenD:new Map()};
 }
 function roomCode(){return ($('roomCode').value||'').toLowerCase().replace(/[^a-z0-9_.-]/g,'').slice(0,16);}
 function roomName(){return 'dl-'+roomCode();}
@@ -11119,7 +11150,7 @@ async function mpJoin(){
     mpUnlisten(m);const old=m.room;m.room=null;
     if(m.shared)old.presence({rc:null,ig:0}).catch(()=>{});else try{await old.leave();}catch(e){}
   }
-  m.roomName=name;m.code=code;m.shared=false;m.joining=true;m.joinErr='';m.myPeer=null;updateRoomStatus();
+  m.roomName=name;m.code=code;m.shared=false;m.joining=true;m.joinErr='';m.myPeer=null;m.lf=pendingLf||'';pendingLf='';m.vote=null;m.myVote=null;updateRoomStatus();
   let r=null,err='';
   if(!namedRoomsOff){
     // a slow or busy service gets two more tries before the shared room takes over
@@ -11132,7 +11163,7 @@ async function mpJoin(){
     if(!r&&err==='not_permitted')namedRoomsOff=true;
   }
   if(!r){m.shared=true;r=roomNs;}
-  m.joining=false;m.room=r;m.joinErr=err;
+  m.joining=false;m.room=r;m.joinErr=err;m.jt=Date.now();
   ['drop','take','boom'].forEach(t=>{try{m.unsub.push(r.on(t,msg=>{try{mpOnMsg(t,msg);}catch(e){}},e=>{m.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}));}catch(e){}});
   try{m.unsub.push(r.onPeers(()=>updateRoomStatus(),e=>{m.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}));}catch(e){}
   lobbyPresence();
@@ -11141,7 +11172,7 @@ async function mpJoin(){
 function lobbyPresence(){
   try{friendPresence();}catch(e){}
   if(!mp||!mp.room||mp.inGame)return;
-  mp.room.presence({rc:mp.code,ig:0,md:mp.mode,mi:currentMap,cs:callsign,sk:SHOP.equipped,bn:bnOwnClean(),rk:rankFor(stats.kills).r.name,ri:rankFor(stats.kills).i}).then(()=>{if(mp&&mp.joinErr&&mp.shared){mp.joinErr='';updateRoomStatus();}},e=>{if(mp){mp.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}});
+  mp.room.presence(Object.assign({rc:mp.code,ig:0,md:mp.mode,mi:currentMap,cs:callsign,sk:SHOP.equipped,bn:bnOwnClean(),rk:rankFor(stats.kills).r.name,ri:rankFor(stats.kills).i},squadPresence())).then(()=>{if(mp&&mp.joinErr&&mp.shared){mp.joinErr='';updateRoomStatus();}},e=>{if(mp){mp.joinErr=e&&e.code||'upstream_error';updateRoomStatus();}});
 }
 function mpLeave(){
   if(!mp)return;
@@ -11165,14 +11196,16 @@ function activeMatch(){
   for(const p of others()){
     const s=p.presence;if(!s||s.ig!==1||!MAPS[s.mi]||(s.md!=='coop'&&s.md!=='versus'))continue;
     const k=s.md+'|'+s.mi,si=+s.si||0;
-    if(!g[k])g[k]={md:s.md,mi:s.mi,n:0,si};
-    g[k].n++;g[k].si=Math.min(g[k].si,si);
+    if(!g[k])g[k]={md:s.md,mi:s.mi,n:0,si,jn:false};
+    g[k].n++;g[k].si=Math.min(g[k].si,si);if(s.jn===1)g[k].jn=true;
   }
   let best=null;for(const k in g)if(!best||g[k].si<best.si)best=g[k];
   return best;
 }
 function updateRoomStatus(){
   const el=$('roomStatus'),btn=$('deployBtn');if(!el)return;
+  try{renderVote();}catch(e){}
+  btn.classList.remove('waitLead');
   if(!mp){el.textContent='';el.classList.remove('live');btn.textContent='Deploy';try{renderSquad();}catch(e){}return;}
   if(mp.inGame)return;
   if(!mp.room&&!roomCode()&&roomState!=='pending'){
@@ -11183,32 +11216,159 @@ function updateRoomStatus(){
   if(mp.joinErr&&(!mp.shared||!['upstream_error','not_permitted','limit_reached'].includes(mp.joinErr))){
     el.textContent='Multiplayer is not connecting: '+(JOIN_HELP[mp.joinErr]||mp.joinErr)+'. You can still play solo.';el.classList.remove('live');return;
   }
-  const o=others(),m=activeMatch();
+  const o=others(),m=activeMatch(),L=squadLeader(),lead=!L||L.me,unit=m&&m.md==='coop'?'wave':'round';
+  btn.classList.toggle('waitLead',false);
   if(m){
-    el.textContent=m.n+(m.n===1?' player is':' players are')+' in a '+(m.md==='coop'?'co-op':'versus')+' match on '+MAPS[m.mi].name+'. Deploy to join them.';
-    btn.textContent='Join match';
+    const where=m.n+(m.n===1?' player is':' players are')+' in a '+(m.md==='coop'?'co-op':'versus')+' match on '+MAPS[m.mi].name+'. ';
+    if(mp.queueJoin){el.textContent=where+'You drop in as soon as the current '+unit+' ends.';btn.textContent='Stop waiting';}
+    else{el.textContent=where+(m.jn?'Deploy to join them now.':'New players drop in when the current '+unit+' ends.');btn.textContent=m.jn?'Join match':'Join next '+unit;}
+  }else if(lead){
+    el.textContent=o.length?'You lead this squad. Everyone votes on the map below, then you start the match.':'Nobody else here yet. Invite friends or send them this code. You lead the squad and start the match.';
+    btn.textContent='Start match';
   }else{
-    el.textContent=o.length?'Everyone is in the lobby. Whoever deploys first picks the map.':'Nobody else here yet. Send your squad this code. Whoever deploys first picks the map.';
-    btn.textContent=modeSel==='coop'?'Deploy squad':'Enter arena';
+    el.textContent=L.cs+' leads this squad and starts the match. Vote for the map below.';
+    btn.textContent='Waiting for '+L.cs;btn.classList.add('waitLead');
   }
+  try{renderVote();}catch(e){}
   el.classList.toggle('live',o.length>0);
   try{renderSquad();}catch(e){}
 }
-function startDeploy(){
+/* ---------- Squad leader and the map vote ----------
+   Whoever invited the others leads the squad (lf = the leader's friend code, carried in presence; with no invite,
+   whoever has been in the squad longest leads). Only the leader starts a match; everyone else follows them in.
+   Before each match the leader's game deals three maps at random, never the same three or the last map played,
+   and the whole squad votes for one of them or for Random. Start uses the most votes (ties are drawn at random).
+   A match already running takes new players only between waves or rounds, and they earn nothing from before. */
+var pendingLf='';
+function squadPresence(){
+  if(!mp)return {};
+  const o={fc:myFC,lf:mp.lf||'',jt:mp.jt||0,vt:mp.myVote||null,vo:null,vn:null};
+  if(mp.vote&&!mp.inGame){const L=squadLeader();if(!L||L.me){o.vo=mp.vote.o;o.vn=mp.vote.n;}}
+  return o;
+}
+function squadMembers(){
+  const L=[{peer:myPeer()||'me',me:true,fc:myFC,lf:mp.lf||'',jt:mp.jt||9e15,cs:callsign,ig:mp.inGame?1:0,s:null}];
+  for(const p of others()){const s=p.presence||{};L.push({peer:p.peer,me:false,fc:typeof s.fc==='string'?s.fc:'',lf:typeof s.lf==='string'?s.lf:'',jt:+s.jt||9e15,cs:cleanCS(s.cs)||'OPERATOR',ig:s.ig===1?1:0,s});}
+  return L;
+}
+function squadLeader(){
+  if(!mp||!mp.room)return null;
+  const L=squadMembers(),n={};
+  L.forEach(m=>{if(m.lf)n[m.lf]=(n[m.lf]||0)+(m.me?1.5:1);});
+  for(const fc of Object.keys(n).sort((a,b)=>n[b]-n[a])){const m=L.find(x=>x.fc===fc);if(m)return m;}
+  return L.sort((a,b)=>a.jt-b.jt||(a.peer<b.peer?-1:1))[0];
+}
+function voteMaps(){return Object.keys(MAPS).filter(id=>!MAPS[id].boss);}
+function dealVote(){
+  const pool=voteMaps(),prev=mp.vote&&mp.vote.o||[];
+  let c=pool.filter(id=>!prev.includes(id)&&id!==mp.lastPlayed);if(c.length<3)c=pool.filter(id=>id!==mp.lastPlayed);if(c.length<3)c=pool.slice();
+  const o=[];while(o.length<3&&c.length)o.push(c.splice(Math.floor(Math.random()*c.length),1)[0]);
+  mp.vote={o,n:(Date.now()%1e9)+1};mp.myVote=null;
+  lobbyPresence();
+}
+// the ballot everyone sees: the leader's
+function currentVote(){
+  const L=squadLeader();if(!L)return null;
+  if(L.me){if(!mp.vote||!Array.isArray(mp.vote.o)||mp.vote.o.length!==3)dealVote();return mp.vote;}
+  const v=L.s&&L.s.vo;
+  return Array.isArray(v)&&v.length===3&&v.every(id=>MAPS[id])?{o:v,n:+L.s.vn||0}:null;
+}
+function voteTally(v){
+  const t={random:[]};v.o.forEach(id=>t[id]=[]);
+  for(const m of squadMembers()){
+    const x=m.me?mp.myVote:(m.s&&m.s.vt);
+    if(Array.isArray(x)&&+x[0]===v.n&&t[x[1]])t[x[1]].push(m);
+  }
+  return t;
+}
+function castVote(id){const v=currentVote();if(!v)return;mp.myVote=[v.n,id];lobbyPresence();renderVote();uiTick(520);}
+function voteWinner(v){
+  const t=voteTally(v);let best=0,top=[];
+  for(const k in t){const c=t[k].length;if(c>best){best=c;top=[k];}else if(c===best&&c>0)top.push(k);}
+  if(!top.length)top=v.o.slice();
+  const w=top[Math.floor(Math.random()*top.length)];
+  return w==='random'?randomMap():w;
+}
+function renderVote(){
+  const box=$('voteCards'),grid=$('mapCards'),note=$('mapPickNote'),tt=$('opsTitle');if(!box)return;
+  const on=!!(mp&&mp.room&&modeSel!=='solo'&&!mp.inGame);
+  box.hidden=!on;grid.hidden=on;if(tt)tt.textContent=on?'Map vote':'Choose a map';
+  if(!on){if(box.dataset.sig){box.dataset.sig='';box.textContent='';try{showMapChoice();}catch(e){}}return;}
+  const v=currentVote(),L=squadLeader();
+  if(!v){note.textContent='Waiting for the squad leader to deal the maps';if(box.dataset.sig!=='none'){box.dataset.sig='none';box.textContent='';}return;}
+  const t=voteTally(v),mine=Array.isArray(mp.myVote)&&mp.myVote[0]===v.n?mp.myVote[1]:null;
+  note.textContent=L&&!L.me?'Vote for a map · '+L.cs+' starts the match':'Vote with your squad, then start the match';
+  const sig=JSON.stringify([v.n,v.o,mine,Object.keys(t).map(k=>[k,t[k].map(m=>m.cs)])]);
+  if(box.dataset.sig===sig)return;box.dataset.sig=sig;box.textContent='';
+  v.o.concat(['random']).forEach(id=>{
+    const b=document.createElement('button');b.type='button';b.className='mapCard'+(id==='random'?' randCard':'');b.setAttribute('role','radio');
+    b.setAttribute('aria-checked',String(mine===id));b.tabIndex=mine===id||(!mine&&id===v.o[0])?0:-1;
+    b.innerHTML='<i></i><em class="badge"></em><b></b><span></span>';
+    const n=t[id].length;
+    if(id==='random'){const r=$('map-random');b.style.setProperty('--sw',r?r.style.getPropertyValue('--sw'):'#333');b.querySelector('b').textContent='Random';b.querySelector('span').textContent='Any map';}
+    else{b.style.setProperty('--sw',MAPS[id].swatch);b.querySelector('i').style.backgroundImage='url(map-'+id+'.webp)';b.querySelector('b').textContent=MAPS[id].name;b.querySelector('span').textContent=MAPS[id].tag||'';}
+    const em=b.querySelector('em');if(n)em.textContent=n+(n>1?' votes':' vote');else em.remove();
+    b.title=n?'Voted: '+t[id].map(m=>m.me?'you':m.cs).join(', '):'No votes yet';
+    b.setAttribute('aria-label',(id==='random'?'Random map':MAPS[id].name)+', '+n+(n===1?' vote':' votes'));
+    b.addEventListener('click',()=>castVote(id));
+    box.append(b);
+  });
+}
+// arrow keys move the vote like the map picker
+$('voteCards').addEventListener('keydown',e=>{
+  const bs=[...$('voteCards').querySelectorAll('.mapCard')];const i=bs.indexOf(document.activeElement);if(i<0)return;
+  let j=-1;if(e.key==='ArrowRight'||e.key==='ArrowDown')j=(i+1)%bs.length;else if(e.key==='ArrowLeft'||e.key==='ArrowUp')j=(i+bs.length-1)%bs.length;
+  if(j<0)return;e.preventDefault();e.stopPropagation();bs[j].focus();bs[j].click();
+});
+// is this match taking new players right now? Between waves in co-op, between rounds in versus, or just started
+function matchJoinable(){
+  if(!mp||!mp.inGame)return false;
+  if(mp.mode==='coop')return wave===0||intermission>0;
+  if(mp.roundT>0)return true;
+  if(mp.round>0)return false;
+  for(const p of inGamePeers())if((+p.presence.fk||0)>0)return false;
+  return (mp.frags||0)===0;
+}
+// a late joiner's records count only what they played
+function creditScore(){return mp&&mp.late?Math.max(0,score-(mp.baseScore||0)):score;}
+function creditWave(){return mp&&mp.late?Math.max(0,wave-(mp.baseWave||0)):wave;}
+// followers drop in when their leader starts; anyone waiting drops in when the wave or round ends
+setInterval(()=>{
+  if(!mp||!mp.room||mp.inGame||state!=='menu'||$('menu').hidden)return;
+  const m=activeMatch();
+  if(!m){if(mp.queueJoin&&Date.now()>(mp.queueGrace||0)){mp.queueJoin=false;updateRoomStatus();}mp.noFollow=false;return;}
+  const L=squadLeader(),follow=L&&!L.me&&L.ig===1&&!mp.noFollow;
+  if((mp.queueJoin||follow)&&m.jn){mp.queueJoin=false;toast(follow?L.cs+' started the match':'Dropping in');startDeploy(true);}
+  else if(follow&&!mp.queueJoin){mp.queueJoin=true;updateRoomStatus();}
+},1000);
+function startDeploy(auto){
+  if(auto&&typeof auto==='object')auto=false;   // called as a click handler
   // co-op or versus with no code: make a private squad code and deploy once it is joined
   if(mp&&!mp.inGame&&!roomCode()){
     $('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');
     mpJoin().then(()=>{if(mp&&mp.room)startDeploy();});return;
   }
-  const go=()=>{resetGame();if(mp)mpOnDeploy();play();};
   const m=mp&&!mp.inGame?activeMatch():null;
+  if(mp&&mp.queueJoin&&!auto){mp.queueJoin=false;mp.noFollow=true;updateRoomStatus();toast('Stopped waiting to drop in');return;}
+  const go=()=>{resetGame();if(mp){mpOnDeploy();if(m)mp.late=true;}play();};
   if(m){
+    // a match in progress takes new players only between waves (co-op) or rounds (versus)
+    if(!m.jn){mp.queueJoin=true;mp.noFollow=false;updateRoomStatus();toast('You drop in when the current '+(m.md==='coop'?'wave':'round')+' ends');return;}
+    mp.queueJoin=false;
     if(m.md!==modeSel){modeSel=m.md;mp.mode=m.md;renderModes();}
     if(m.mi!==currentMap){toast('Joining the match on '+MAPS[m.mi].name);fadeTo(m.mi,go);return;}
     go();return;
   }
-  const pickId=mapPick!=='random'&&MAPS[mapPick]?mapPick:randomMap();
-  toast((mapPick==='random'?'Random map: deploying to ':'Deploying to ')+MAPS[pickId].name);
+  let pickId;
+  if(mp&&mp.room){
+    const L=squadLeader();
+    if(L&&!L.me){toast('Only the squad leader, '+L.cs+', can start the match');uiTick(780);return;}
+    const v=currentVote();pickId=v?voteWinner(v):randomMap();mp.lastPlayed=pickId;
+    toast('Squad vote: deploying to '+MAPS[pickId].name);
+  }else{
+    pickId=mapPick!=='random'&&MAPS[mapPick]?mapPick:randomMap();
+    toast((mapPick==='random'?'Random map: deploying to ':'Deploying to ')+MAPS[pickId].name);
+  }
   if(pickId!==currentMap){fadeTo(pickId,go);return;}
   go();
 }
@@ -11260,7 +11420,7 @@ function syncAvatars(dt){
 }
 function updateAvatar(a,s,dt){
   const P=Array.isArray(s.p)?s.p:[0,0,0],k=Math.min(1,dt*14),bx=a.pos.x,bz=a.pos.z;
-  a.si=+s.si||0;
+  a.si=+s.si||0;a.yw=+s.yw||0;a.pt=+s.pt||0;
   a.pos.x=lerp(a.pos.x,+P[0]||0,k);a.pos.y=lerp(a.pos.y,+P[1]||0,k);a.pos.z=lerp(a.pos.z,+P[2]||0,k);
   let dy=((+s.yw||0)+Math.PI)-a.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));a.yaw+=dy*Math.min(1,dt*16);
   const moving=Math.hypot(a.pos.x-bx,a.pos.z-bz)>dt*.6;
@@ -11356,12 +11516,22 @@ function hostSnapshot(){
   const hu={},ku={};
   for(const k in mp.hu){const h=mp.hu[k];hu[k]=[Math.round(h[0]),h[1],h[2],h[3]];}
   for(const k in mp.ku)ku[k]=mp.ku[k].slice();
-  return {en,g:{w:wave,ts:toSpawn,im:Math.ceil(Math.max(0,intermission)),sc:score,c:mp.clears},hu,ku};
+  // ak: per teammate, how much of their reported damage on each listed raider has been applied here,
+  // so their game can tell how much of what they dealt is still in flight (see mpClientHit)
+  const ak={},listed=new Set(en.map(r=>r[0])),sis={};
+  for(const p of inGamePeers())sis[p.peer]=String(+p.presence.si||0);
+  for(const [key,v] of mp.seenH){
+    const i=key.indexOf(':'),j=key.lastIndexOf(':'),peer=key.slice(0,i),si=key.slice(i+1,j),id=+key.slice(j+1);
+    if(sis[peer]!==si||!listed.has(id))continue;
+    const a=ak[peer]||(ak[peer]=[]);if(a.length<40)a.push([id,Math.round(v[0])]);
+  }
+  return {en,g:{w:wave,ts:toSpawn,im:Math.ceil(Math.max(0,intermission)),sc:score,c:mp.clears},hu,ku,ak};
 }
 function applyHost(s){
   const g=s.g;
   if(g&&typeof g==='object'){
     wave=+g.w||0;toSpawn=+g.ts||0;intermission=+g.im||0;score=+g.sc||0;
+    if(mp.late&&!mp.baseSet){mp.baseSet=true;mp.baseScore=score;mp.baseWave=wave;}
     if(wave>mp.prevW&&wave>0){try{contractWave(wave);}catch(err){}}
     if(wave>mp.prevW&&wave>0&&mp.prevC>=0){banner('Wave '+wave,'Hostiles inbound',2.2);sfxTone(520,.18,.12,'triangle');sfxTone(390,.25,.12,'triangle',.18);}
     const c=+g.c||0;
@@ -11384,11 +11554,15 @@ function applyHost(s){
     if(!e){if(r[6])continue;e=spawnEnemy();e.ghost=true;e.id=id;e.pos.set(net.x,terrainH(net.x,net.z),net.z);e.yaw=net.yaw;}
     if(!e.ghost)continue;
     e.net=net;e.hp=net.hp;
+    if(!r[6]&&e.predDead&&time-e.predT>3)unpredictKill(e);
     if(r[6]&&!e.dead){e.dead=true;e.flash.visible=false;e.mats.forEach(m=>m.emissive.setHex(0));e.poolT=.9;}
   }
   enemies=enemies.filter(e=>{if(e.ghost&&!e.dead&&!seen.has(e.id)){scene.remove(e.g);return false;}return true;});
   // raiders the host no longer lists are gone for good, so their running damage totals can go too
   for(const id in mp.dealt)if(!seen.has(+id))delete mp.dealt[id];
+  const me=myPeer(),ak=me&&s.ak&&s.ak[me];mp.ack={};
+  if(Array.isArray(ak))for(const a of ak)if(Array.isArray(a))mp.ack[+a[0]]=+a[1]||0;
+  if(s.ak!==undefined)mp.hasAck=true;
 }
 // Co-op guest: the host's running totals of kills it credited to us and damage its raiders did to us
 function readHostTotals(s){
@@ -11441,7 +11615,7 @@ function electHost(){
   if(mp.isHost&&!was){
     // the host left: take over their raiders where they stand
     let n=0;
-    for(const e of enemies){if(!e.ghost)continue;e.ghost=false;n++;if(e.net)e.hp=e.net.hp;e.thinkT=0;e.goal=null;e.path=null;e.tgtUntil=0;nextEnemyId=Math.max(nextEnemyId,e.id+1);}
+    for(const e of enemies){if(!e.ghost)continue;if(e.predDead)unpredictKill(e);e.ghost=false;n++;if(e.net)e.hp=e.net.hp;e.thinkT=0;e.goal=null;e.path=null;e.tgtUntil=0;nextEnemyId=Math.max(nextEnemyId,e.id+1);}
     mp.hu={};mp.ku={};mp.seenH.clear();mp.dealt={};mp.hostKey='';
     if(n||wave>0)toast('You are now running the raiders');
   }else if(!mp.isHost&&was){
@@ -11458,10 +11632,22 @@ function hostEnded(){
 /* Hits: shown at once on the shooter's screen, then added to that player's running totals */
 function mpClientHit(e,dmg,head,opt){
   if(e.dead)return;
-  showDamage(e,opt.point||new V3(e.pos.x,e.pos.y+1.9,e.pos.z),dmg,head,false);
-  hits++;if(settings.hitSound)sfxTone(head?1900:1300,.05,.12,'square');hitmarker(false);e.hurtT=.08;
   let q=mp.dealt[e.id];if(!q)q=mp.dealt[e.id]=[0,0,0];
   q[0]+=dmg;if(head)q[1]++;if(opt.explosive)q[2]=1;
+  // The host only hears about our hits a moment later. Count what is still in flight against the raider's
+  // last known health, so a raider we have already killed drops at once instead of soaking more rounds.
+  const kill=mp.hasAck&&e.hp-(q[0]-(mp.ack[e.id]||0))<=0;
+  showDamage(e,opt.point||new V3(e.pos.x,e.pos.y+1.9,e.pos.z),dmg,head,kill);
+  hits++;if(settings.hitSound)sfxTone(head?1900:1300,.05,.12,'square');hitmarker(kill);e.hurtT=.08;
+  if(kill)predictKill(e,opt);
+}
+function predictKill(e,opt){
+  e.dead=true;e.predDead=true;e.predT=time;e.deathT=0;e.flash.visible=false;e.mats.forEach(m=>m.emissive.setHex(0));e.poolT=.9;
+  if(opt.explosive&&opt.from){const away=new V3(e.pos.x-opt.from.x,0,e.pos.z-opt.from.z);if(away.lengthSq()<1e-4)away.set(rand()-.5,0,rand()-.5);away.normalize();e.yaw=Math.atan2(-away.x,-away.z);e.fling=away.multiplyScalar(5+rand()*3);e.fling.y=4.5+rand()*2;e.flung=true;}
+}
+function unpredictKill(e){
+  e.dead=false;e.predDead=false;e.deathT=0;e.fling=null;e.flung=false;e.poolT=0;
+  e.pos.y=terrainH(e.pos.x,e.pos.z);e.g.rotation.set(0,e.yaw,0);
 }
 function mpPvpHit(a,dmg,head,point){
   if(!mp||a.dead||mp.roundT>0)return;
@@ -11555,7 +11741,78 @@ function mpLocalDeath(){
   }else banner('You are down','Back in when the squad clears the wave',3.5);
   sendPresence();
 }
+/* Spectating: while you are down in a co-op match, watch a teammate who is still standing, through their eyes.
+   Q / E (or the arrow keys, or a click) switch between them, 1-9 picks one, Space toggles the overhead view. */
+const SPEC={peer:null,free:false,hidden:null,pos:new V3(),yaw:0,pitch:0,init:false,delay:1.2};
+function specList(){return mp?[...mp.avatars.values()].filter(a=>!a.dead):[];}
+function specName(a){return (a.cs||(mp&&mp.names[a.peer])||a.label||'Teammate');}
+function specPick(dir,idx){
+  const L=specList();if(!L.length)return;
+  let i;
+  if(idx!==undefined){if(!L[idx])return;i=idx;}
+  else{i=L.findIndex(a=>a.peer===SPEC.peer);i=i<0?0:(i+dir+L.length)%L.length;}
+  SPEC.peer=L[i].peer;SPEC.free=false;SPEC.init=false;sfxTone(620,.04,.06,'square');
+}
+function specShow(a){
+  if(SPEC.hidden&&SPEC.hidden!==a&&SPEC.hidden.g)SPEC.hidden.g.visible=true;
+  if(a&&a.g)a.g.visible=false;
+  SPEC.hidden=a||null;
+}
+function specUpdate(dt){
+  if(!mp||mp.mode!=='coop'||!player.dead){specShow(null);renderSpecBar([],null);return false;}
+  const L=specList();
+  // a moment on the fall first, then over to a teammate
+  if(mp.deadT<SPEC.delay){renderSpecBar(L,null);return false;}
+  let a=SPEC.free?null:L.find(x=>x.peer===SPEC.peer);
+  if(!a&&!SPEC.free&&L.length){a=L[0];SPEC.peer=a.peer;SPEC.init=false;}
+  specShow(a);renderSpecBar(L,a);
+  if(!a)return false;
+  const eye=a.pos.y+1.62-.55*(a.crouchK||0);
+  if(!SPEC.init){SPEC.pos.set(a.pos.x,eye,a.pos.z);SPEC.yaw=a.yw;SPEC.pitch=a.pt;SPEC.init=true;}
+  const k=Math.min(1,dt*14);
+  SPEC.pos.set(lerp(SPEC.pos.x,a.pos.x,k),lerp(SPEC.pos.y,eye,k),lerp(SPEC.pos.z,a.pos.z,k));
+  let dy=a.yw-SPEC.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));SPEC.yaw+=dy*Math.min(1,dt*16);
+  SPEC.pitch=lerp(SPEC.pitch,a.pt,Math.min(1,dt*16));
+  if(camera.view&&camera.view.enabled)camera.clearViewOffset();
+  camera.position.copy(SPEC.pos);camera.rotation.set(SPEC.pitch,SPEC.yaw,0);
+  return true;
+}
+function renderSpecBar(L,a){
+  const bar=$('specBar');if(!bar)return;
+  const on=!!(mp&&mp.inGame&&mp.mode==='coop'&&player.dead&&state==='playing');
+  const sig=on?JSON.stringify([a?a.peer:null,SPEC.free,mp.deadT<SPEC.delay,L.map(x=>[x.peer,specName(x)])]):'off';
+  if(bar.dataset.sig===sig)return;bar.dataset.sig=sig;bar.hidden=!on;if(!on){bar.textContent='';return;}
+  bar.textContent='';
+  const h=document.createElement('div');h.className='spH';
+  h.textContent=a?'Spectating':(L.length?(SPEC.free?'Overhead view':'You are down'):'No teammates standing');
+  bar.append(h);
+  if(a){const b=document.createElement('b');b.textContent=specName(a);bar.append(b);}
+  if(L.length){
+    const ul=document.createElement('div');ul.className='spList';
+    L.forEach((x,i)=>{const c=document.createElement('span');c.className='spChip';if(a===x)c.setAttribute('aria-pressed','true');c.textContent=(i<9?(i+1)+' · ':'')+specName(x);ul.append(c);});
+    const t=document.createElement('span');t.className='spHint';
+    t.textContent=(L.length>1?'Q / E or click to switch · 1–'+Math.min(9,L.length)+' to pick · ':'')+'Space '+(SPEC.free||!a?'to watch a teammate':'for the overhead view');
+    bar.append(ul,t);
+  }
+}
+// while down: these keys drive the spectator instead of the (holstered) loadout
+addEventListener('keydown',e=>{
+  if(!(mp&&mp.inGame&&mp.mode==='coop'&&player.dead&&state==='playing')||e.ctrlKey||e.metaKey||e.altKey)return;
+  const c=e.code;let used=true;
+  if(c==='KeyE'||c==='ArrowRight')specPick(1);
+  else if(c==='KeyQ'||c==='ArrowLeft')specPick(-1);
+  else if(/^Digit[1-9]$/.test(c))specPick(0,+c.slice(5)-1);
+  else if(c==='Space'){SPEC.free=!SPEC.free;SPEC.init=false;if(!SPEC.free&&!SPEC.peer)specPick(1);}
+  else used=false;
+  if(used){e.preventDefault();e.stopImmediatePropagation();}
+},true);
+addEventListener('mousedown',e=>{
+  if(!(mp&&mp.inGame&&mp.mode==='coop'&&player.dead&&state==='playing'))return;
+  if(e.button===0)specPick(1);else if(e.button===2)specPick(-1);else return;
+  e.stopImmediatePropagation();
+},true);
 function mpRevive(){
+  specShow(null);SPEC.init=false;
   player.dead=false;player.hp=MAXHP;player.vy=0;player.crouch=false;player.eyeH=1.62;
   const a=[...mp.avatars.values()].find(x=>!x.dead);
   if(a)player.pos.set(a.pos.x+1.2,0,a.pos.z+1.2);
@@ -11564,6 +11821,7 @@ function mpRevive(){
   toast('Back in the fight');
 }
 function mpRespawn(){
+  specShow(null);
   let best=null,bs=-1;
   for(let i=0;i<30&&waypoints.length;i++){
     const w=waypoints[rand()*waypoints.length|0];
@@ -11588,9 +11846,11 @@ function mpDeadUpdate(dt){
   time+=dt;
   if(!mp){player.dead=false;return;}
   mp.deadT+=dt;
-  const c=mp.deathPos||player.pos,a=mp.deadT*.25,h=Math.min(1,mp.deadT/1.2);
-  camera.position.set(c.x+Math.sin(a)*5*h,lerp(c.y+1.6,7,h),c.z+Math.cos(a)*5*h);
-  camera.lookAt(c.x,.6,c.z);
+  if(!specUpdate(dt)){
+    const c=mp.deathPos||player.pos,a=mp.deadT*.25,h=Math.min(1,mp.deadT/1.2);
+    camera.position.set(c.x+Math.sin(a)*5*h,lerp(c.y+1.6,7,h),c.z+Math.cos(a)*5*h);
+    camera.lookAt(c.x,.6,c.z);
+  }
   if(mp.mode==='versus'&&mp.roundT<=0){
     mp.respawnT-=dt;const n=Math.ceil(mp.respawnT);
     if(n>0&&n!==mp.lastN){mp.lastN=n;$('bannerSub').textContent='Respawning in '+n;}
@@ -11621,7 +11881,8 @@ function sendPresence(){
   const r=v=>Math.round(v*100)/100;
   const p={rc:mp.code,ig:mp.inGame?1:0,md:mp.mode,mi:currentMap,si:mp.since,p:[r(player.pos.x),r(player.pos.y),r(player.pos.z)],yw:r(Math.atan2(Math.sin(yaw),Math.cos(yaw))),pt:r(pitch),
     cr:player.crouch?1:0,dd:player.dead?1:0,mv:isMoving()?1:0,sh:mp.shotN,fk:mp.frags,de:mp.deaths,dc:mp.dc,kb:mp.killer,kh:mp.killerHead,rn:mp.round,rw:mp.roundWin,
-    ov:mp.over?1:0,cs:callsign,sk:SHOP.equipped,en:null,g:null,hu:null,ku:null,dl:null,hk:null,pv:null};
+    ov:mp.over?1:0,cs:callsign,sk:SHOP.equipped,en:null,g:null,hu:null,ku:null,dl:null,hk:null,pv:null,jn:matchJoinable()?1:0};
+  Object.assign(p,squadPresence());
   if(mp.inGame&&mp.mode==='coop'){
     if(mp.isHost)Object.assign(p,hostSnapshot());
     else{
@@ -11650,7 +11911,7 @@ function mpTick(dt){
         mp.hostPres=h.presence;
         const hk=h.peer+':'+(+h.presence.si||0);
         if(hk!==mp.hostKey){
-          const first=!mp.hostKey;mp.hostKey=hk;mp.dealt={};mp.seenC.clear();
+          const first=!mp.hostKey;mp.hostKey=hk;mp.dealt={};mp.ack={};mp.hasAck=false;mp.seenC.clear();
           const me=myPeer(),s=h.presence,hu=me&&s.hu&&s.hu[me],ku=me&&s.ku&&s.ku[me];
           if(!first&&Array.isArray(hu)&&+hu[3]===mp.since)mp.seenC.set('hu',+hu[0]||0);
           if(!first&&Array.isArray(ku)&&+ku[2]===mp.since){mp.seenC.set('k',+ku[0]||0);mp.seenC.set('h',+ku[1]||0);mp.seenC.set('x',+ku[3]||0);}
@@ -11685,8 +11946,8 @@ function mpRadar(){
   rctx.restore();rctx.globalAlpha=1;
 }
 function mpOnDeploy(){
-  Object.assign(mp,{inGame:true,since:Date.now(),frags:0,deaths:0,dc:0,killer:null,killerHead:0,clears:0,roundT:0,over:false,prevC:-1,prevW:0,
-    hostPres:null,hostKey:'',lastAttacker:null,dealt:{},pv:{},hu:{},ku:{}});
+  Object.assign(mp,{late:false,baseSet:false,baseScore:0,baseWave:0,queueJoin:false,vote:null,myVote:null,inGame:true,since:Date.now(),frags:0,deaths:0,dc:0,killer:null,killerHead:0,clears:0,roundT:0,over:false,prevC:-1,prevW:0,
+    hostPres:null,hostKey:'',lastAttacker:null,dealt:{},ack:{},hasAck:false,pv:{},hu:{},ku:{}});
   mp.seenH.clear();mp.seenC.clear();mp.seenV.clear();mp.seenD.clear();
   if(mp.mode==='versus'){
     enemies.forEach(e=>scene.remove(e.g));enemies=[];intermission=0;wave=0;toSpawn=0;mp.isHost=false;
@@ -11697,13 +11958,13 @@ function mpOnDeploy(){
   }else{
     chipLabels(['Wave','Hostiles','Score']);
     const o=mp.room?inGamePeers():[];
-    if(o.length){mp.isHost=false;intermission=0;player.pos.set(1.5,0,1.5);banner('Joining the squad',(o.length+1)+' players',2.5);}
+    if(o.length){mp.isHost=false;mp.late=true;intermission=0;player.pos.set(1.5,0,1.5);banner('Joining the squad',(o.length+1)+' players',2.5);}
     else mp.isHost=true;
   }
   sendPresence();try{friendPresence();}catch(e){}
 }
 function mpOnGameOver(){
-  mp.inGame=false;try{friendPresence();}catch(e){}
+  mp.inGame=false;mp.vote=null;mp.myVote=null;try{specShow(null);renderSpecBar([],null);}catch(e){}try{friendPresence();}catch(e){}
   mp.avatars.forEach(a=>scene.remove(a.g));mp.avatars.clear();
   if(mp.room)mp.room.presence({ig:0,dd:0,mi:currentMap,ov:mp.over?1:0,en:null,g:null,hu:null,ku:null,dl:null,pv:null}).catch(()=>{});
   updateRoomStatus();
@@ -11772,7 +12033,7 @@ function matchPerformance(){
     return 6+Math.min(20,(mp.frags||0)*.9)+Math.min(10,kd*4)+acc*10+hs*8;
   }
   const dm=difficulty==='veteran'?1.35:difficulty==='recruit'?.75:1;
-  const waves=Math.max(0,wave-1)*dm,kpw=wave>0?kills/wave:0;
+  const cw=creditWave(),waves=Math.max(0,cw-1)*dm,kpw=cw>0?kills/cw:0;
   return 4+waves*1.6+acc*10+hs*10+Math.min(8,kpw*.9)*dm;
 }
 function updateSkill(){
@@ -11824,7 +12085,7 @@ function recordMatch(){
   stats.matches++;stats.kills+=kills;stats.headshots+=headshots;stats.shots+=shots;stats.hits+=hits;
   // only real fights move your skill estimate
   if(kills>0||wave>1||(mp&&mp.frags))updateSkill();
-  if(!(mp&&mp.mode==='versus')){const m=stats.maps[currentMap]||(stats.maps[currentMap]={score:0,wave:0});m.score=Math.max(+m.score||0,score);m.wave=Math.max(+m.wave||0,wave);}
+  if(!(mp&&mp.mode==='versus')){const m=stats.maps[currentMap]||(stats.maps[currentMap]={score:0,wave:0});m.score=Math.max(+m.score||0,creditScore());m.wave=Math.max(+m.wave||0,creditWave());}
   try{localStorage.setItem('dustline-stats',JSON.stringify(stats));}catch(e){}
   renderRank(true);cloudSoon();try{checkMilestones();}catch(e){}
   try{
@@ -12103,7 +12364,40 @@ $('recReset').addEventListener('click',()=>{
   try{localStorage.removeItem('dustline-stats');localStorage.removeItem('dustline-best');}catch(e){}
   showBest();renderRecords();
 });
-$('pauseHomeBtn').addEventListener('click',goHome);
+$('pauseHomeBtn').addEventListener('click',()=>{if(mp)mp.noFollow=true;goHome();});
+function pauseTab(t){
+  const f=t==='friends';
+  $('pTabMatch').setAttribute('aria-selected',String(!f));$('pTabFriends').setAttribute('aria-selected',String(f));
+  $('pTabMatch').tabIndex=f?-1:0;$('pTabFriends').tabIndex=f?0:-1;
+  $('pauseMatch').hidden=f;$('pauseFriends').hidden=!f;
+  if(f){try{pollRequests();}catch(e){}renderPauseFriends();}
+}
+$('pTabMatch').addEventListener('click',()=>{pauseTab('match');uiTick(520);});
+$('pTabFriends').addEventListener('click',()=>{pauseTab('friends');uiTick(520);});
+[$('pTabMatch'),$('pTabFriends')].forEach(b=>b.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();const n=b.id==='pTabMatch'?'friends':'match';pauseTab(n);(n==='friends'?$('pTabFriends'):$('pTabMatch')).focus();}}));
+$('pfResume').addEventListener('click',()=>{play();});
+function renderPauseFriends(){
+  const list=$('pfList');if(!list||$('pauseFriends').hidden)return;
+  $('pfCode').textContent=myFC;
+  const sq=!!(mp&&mp.inGame),unit=mp&&mp.mode==='versus'?'round':'wave';
+  $('pfNote').textContent=sq?('Invite a friend who is online and they get a pop-up to join. They drop in when the current '+unit+' ends, and they get no rewards for anything the squad earned before they arrived.')
+    :'Invites are for squad matches. Play co-op or versus to bring friends in; from the home screen you can invite a friend to start a squad.';
+  list.textContent='';
+  if(!friends.length){const li=document.createElement('li');li.className='frEmpty';li.textContent='No friends yet. Add friends with their code from Friends on the home screen.';list.append(li);return;}
+  const rows=friends.map(f=>({f,st:friendStatus(f)})).sort((a,b)=>(b.st.on-a.st.on));
+  rows.forEach(({f,st},i)=>{
+    const li=document.createElement('li');li.className='frRow'+(st.on?' on':'');
+    const ava=document.createElement('div');ava.className='ava';ava.style.background=st.on?AVA[(i+1)%AVA.length]:'#3a4048';ava.textContent=(f.cs||f.code)[0];
+    const who=document.createElement('div');who.className='who';
+    const b=document.createElement('b');b.textContent=f.cs||'Friend';const sm=document.createElement('span');sm.textContent=st.text;who.append(b,sm);
+    const act=document.createElement('div');act.className='frAct';
+    const inMySquad=st.on&&st.sq&&mp&&mp.room&&st.sq===roomCode();
+    if(inMySquad){const t=document.createElement('em');t.textContent=st.p&&st.p.presence.fst===1?'In this match':'Joining';act.append(t);}
+    else if(st.on&&sq){const iv=document.createElement('button');iv.type='button';iv.className='go frBtn';const sent=FR.inv.includes(f.code)&&Date.now()-FR.invT<90000;iv.textContent=sent?'Invited':'Invite';iv.disabled=sent;iv.addEventListener('click',()=>inviteFriend(f.code));act.append(iv);}
+    li.append(ava,who,act);list.append(li);
+  });
+}
+setInterval(()=>{if(state==='paused'&&!$('pause').hidden)try{renderPauseFriends();}catch(e){}},2000);
 // Laptop controls: fewer held keys means fewer trackpad pauses from Windows palm rejection
 function laptopPreset(btn){
   settings.crouchMode='toggle';settings.aimMode='toggle';settings.autoReload=true;
@@ -12368,7 +12662,8 @@ function friendPresence(){
   frPresT=setTimeout(()=>{
     const s=mySquad();
     if(FR.inv.length&&Date.now()-FR.invT>90000)FR.inv=[];
-    roomNs.presence({fc:myFC,cs:callsign,fsq:s.sq,fmd:s.md,fst:mp&&mp.inGame?1:0,fmi:currentMap,finv:FR.inv.length?FR.inv.slice(0,8):null,finvT:FR.inv.length?FR.invT:null,freq:FR.out.length?FR.out.map(o=>o.code).slice(0,10):null,facc:FR.acc.length?FR.acc.slice(0,10):null}).catch(()=>{});
+    let flf='';try{const L=squadLeader();flf=L?L.fc:'';}catch(e){}
+    roomNs.presence({fc:myFC,cs:callsign,fsq:s.sq,fmd:s.md,flf,fst:mp&&mp.inGame?1:0,fmi:currentMap,finv:FR.inv.length?FR.inv.slice(0,8):null,finvT:FR.inv.length?FR.invT:null,freq:FR.out.length?FR.out.map(o=>o.code).slice(0,10):null,facc:FR.acc.length?FR.acc.slice(0,10):null}).catch(()=>{});
   },120);
 }
 function friendsInit(){
@@ -12468,19 +12763,23 @@ function liveRequests(){
 }
 try{if(window.claude&&typeof window.claude.use==='function')window.claude.use('db').then(d=>{if(!d)return;FR.db=d;pollRequests();FR.pollT=setInterval(pollRequests,20000);},()=>{});}catch(e){}
 function inviteFriend(code){
-  // inviting from solo starts a private squad with a fresh code
-  if(!mp||modeSel==='solo'||!roomCode()){$('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');if(!mp||modeSel==='solo')setMode('coop');else mpJoin();}
+  if(state!=='menu'&&!(mp&&mp.inGame)){toast('Invites work in co-op and versus matches');return;}
+  // inviting from solo starts a private squad with a fresh code, led by whoever sent the invite
+  if(!mp||modeSel==='solo'||!roomCode()){pendingLf=myFC;$('roomCode').value='sq-'+rndCode(5,'abcdefghjkmnpqrstuvwxyz23456789');if(!mp||modeSel==='solo')setMode('coop');else mpJoin();}
+  else{const L=squadLeader();if(!L||L.me){mp.lf=myFC;lobbyPresence();}}
   if(!FR.inv.includes(code))FR.inv.push(code);FR.invT=Date.now();
-  friendPresence();toast('Invite sent');uiTick(980);renderFriends();
+  friendPresence();toast('Invite sent');uiTick(980);renderFriends();try{renderPauseFriends();}catch(e){}
 }
-function joinSquad(sq,md,from){
+function joinSquad(sq,md,from,lf){
   if(!sq)return;
   if(mp&&mp.inGame){toast('Finish or leave your match first');return;}
   $('roomCode').value=String(sq).toLowerCase().replace(/[^a-z0-9_.-]/g,'').slice(0,16);
+  pendingLf=normFC(lf)||'';if(mp&&mp.room&&mp.roomName==='dl-'+roomCode()){mp.lf=pendingLf;pendingLf='';}
   const mode=md==='versus'?'versus':'coop';
   if(mp&&mp.mode!==mode&&!mp.inGame)mp.mode=mode;
   setMode(mode);mpJoin();friendPresence();
   homeTab('deploy');closeFriends();
+  if(mp){mp.queueJoin=true;mp.noFollow=false;mp.queueGrace=Date.now()+8000;}
   toast('Joined '+(from?from+'\'s':'the')+' squad');uiTick(980);
 }
 function checkInvites(){
@@ -12490,7 +12789,7 @@ function checkInvites(){
   if(!p||(mp&&mp.room&&roomCode()===p.presence.fsq)){if(p)FR.seen[p.presence.fc+':'+p.presence.finvT]=1;if(!p||box.dataset.k===p.presence.fc+':'+p.presence.finvT)box.hidden=true;return;}
   const s=p.presence,k=s.fc+':'+s.finvT;
   if(box.dataset.k===k&&!box.hidden)return;
-  box.dataset.k=k;FR.pending={sq:s.fsq,md:s.fmd,fc:s.fc,cs:cleanCS(s.cs)||s.fc};
+  box.dataset.k=k;FR.pending={sq:s.fsq,md:s.fmd,fc:s.fc,cs:cleanCS(s.cs)||s.fc,lf:typeof s.flf==='string'?s.flf:s.fc};
   $('invWho').textContent=FR.pending.cs;
   $('invWhat').textContent='invited you to their '+(s.fmd==='versus'?'versus':'co-op')+' squad';
   box.hidden=false;sfxTone(880,.08,.1,'triangle');sfxTone(1180,.1,.1,'triangle',.09);
@@ -12501,7 +12800,7 @@ function answerInvite(join){
   if(!join)return;
   if(!friends.some(f=>f.code===inv.fc)){friends.unshift({code:inv.fc,cs:inv.cs,t:Date.now()});saveFriends();}
   if(state!=='menu'){toast('Head back to the menu to join '+inv.cs);return;}
-  joinSquad(inv.sq,inv.md,inv.cs);
+  joinSquad(inv.sq,inv.md,inv.cs,inv.lf);
 }
 function renderFriends(){
   const list=$('frList');if(!list)return;
@@ -12540,7 +12839,7 @@ function renderFriends(){
     const b=document.createElement('b');b.textContent=f.cs||'Friend';const sm=document.createElement('span');sm.textContent=f.code+' · '+st.text;who.append(b,sm);
     const act=document.createElement('div');act.className='frAct';
     const inMySquad=st.on&&st.sq&&mp&&mp.room&&st.sq===roomCode();
-    if(st.on&&st.sq&&!inMySquad){const j=document.createElement('button');j.type='button';j.className='ghost frBtn';j.textContent='Join';j.addEventListener('click',()=>joinSquad(st.sq,st.md,f.cs));act.append(j);}
+    if(st.on&&st.sq&&!inMySquad){const j=document.createElement('button');j.type='button';j.className='ghost frBtn';j.textContent='Join';j.addEventListener('click',()=>joinSquad(st.sq,st.md,f.cs,typeof st.p.presence.flf==='string'?st.p.presence.flf:''));act.append(j);}
     if(st.on&&!inMySquad){const iv=document.createElement('button');iv.type='button';iv.className='go frBtn';const sent=FR.inv.includes(f.code)&&Date.now()-FR.invT<90000;iv.textContent=sent?'Invited':'Invite';iv.disabled=sent;iv.addEventListener('click',()=>inviteFriend(f.code));act.append(iv);}
     if(inMySquad){const t=document.createElement('em');t.textContent='In your squad';act.append(t);}
     const x=document.createElement('button');x.type='button';x.className='frX';x.setAttribute('aria-label','Remove '+(f.cs||f.code));x.textContent='✕';
